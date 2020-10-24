@@ -46,13 +46,23 @@ def update_positions(ring, r, particles):
 
     return ring, particles
 
+#ftion to simulate the ASEP ring system and output the final average current
+#N - number of sites, M = n. of particles, rate = rate of moving between sites, t = time steps to make
+def simulate(n,m,Rate, steps):
+    Ring, Ind = init_positions(n,m)
+    passed_particles = 0
 
-
+    for t in range(steps):
+        Ring, passed_particles = update_positions(Ring,Rate, passed_particles)
+        #print(Ring)
+        #print(passed_particles)
+    average_current = passed_particles/steps
+    return average_current
 
 
 ####################################################
 
-
+'''
 
 Ring, Ind = init_positions(N,M)
 passed_particles = 0
@@ -64,3 +74,4 @@ for t in range(t_max):
 
 average_current = passed_particles/t_max
 print("avg current: ",average_current )
+'''
