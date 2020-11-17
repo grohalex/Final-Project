@@ -34,7 +34,7 @@ b = 1     # removal probability
 k = 1       # steping probability
 steps = 25000      #steps
 steady_state = 10000 #10000    #after the transient phase
-alphas = np.linspace(0,1,21) #the different rates we will look at
+alphas = np.linspace(0,1,40) #the different rates we will look at
 betas = np.flip(alphas)
 
 #init
@@ -115,8 +115,8 @@ hm=plt.imshow(current_a_b, cmap='hot',interpolation="None")
 plt.colorbar(hm)
 
 f2 = plt.figure(2)
-plt.xticks(ticks=np.arange(len(alphas)),labels=alphas)
-plt.yticks(ticks=np.arange(len(betas)),labels=betas)
+plt.xticks(ticks=np.arange(len(alphas)),labels=[round(i,1) for i in alphas])
+plt.yticks(ticks=np.arange(len(betas)),labels=[round(i,1) for i in betas])
 plt.title("Average Density heatmap(number of sites = %s, resolution in a = %s, b = %s)"%(N, len(alphas), len(betas)))
 # save this plot inside a variable called hm
 hm=plt.imshow(density_a_b, cmap='hot',interpolation="None")
@@ -124,18 +124,22 @@ hm=plt.imshow(density_a_b, cmap='hot',interpolation="None")
 plt.colorbar(hm)
 plt.show()
 
-'''
-#save the density profile into a txt
-Name = "density_profileN%sa%sb%s"%(N,a,b)
-heading = "site \t DENSITY"
-sites = np.arange(N)
-data = sites,densities
-data = np.array(data)
-data = np.transpose(data)
-fmt = "%-10d", "%-10.3f"
-np.savetxt(Name, data, fmt = fmt, delimiter = "\t", header = heading)
-'''
 
+#save the matrix into a txt
+Name = "heatmap_densityN%s"%(N)
+heading = "Steps: %s cutoff: %s \n alphas: %s \n betas: %s \n"% (steps, steady_state, alphas, betas)
+data = density_a_b
+data = np.array(data)
+#data = np.transpose(data)
+np.savetxt(Name, data, fmt = "%-10.3f", delimiter = "\t", header = heading)
+
+#save the matrix into a txt
+Name = "heatmap_currentN%s"%(N)
+heading = "Steps: %s cutoff: %s \n alphas: %s \n betas: %s \n"% (steps, steady_state, alphas, betas)
+data = current_a_b
+data = np.array(data)
+#data = np.transpose(data)
+np.savetxt(Name, data, fmt = "%-10.3f", delimiter = "\t", header = heading)
 
 '''
 #plotting the density profile

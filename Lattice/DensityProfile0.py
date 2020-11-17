@@ -97,7 +97,7 @@ props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 ax.text(0.05, 0.15, "Current = %s"%round(current,3), transform=ax.transAxes, fontsize=14,
         verticalalignment='top', bbox=props)
 ax.set_ylim([0,1])
-ax.set_xlim([0,100])
+ax.set_xlim([0,1000])
 Title = "Density profile of lattice with %s sites, a = %s, b = %s , steps = %s  "%(N,a,b, steps)
 ax.set_title(Title)
 ax.set_xlabel("ith position in the open lattice")
