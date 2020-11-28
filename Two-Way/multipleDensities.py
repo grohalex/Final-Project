@@ -1,25 +1,28 @@
-# first version of two way lattice for getting current
+# first version of two way lattice for getting more densities
 import numpy as np
 import numpy.random as rd
 import random as random
 import scipy
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from os import path
 from datetime import datetime
 now = datetime.now()
 
 #parameters
 N = 100     # number of sites
-a1 = 1     # injection probability at lattice 1
-a2 = 0.2     # injection probability at lattice 2
+a1 = 0.1     # injection probability at lattice 1
+a2 = 0     # injection probability at lattice 2
 b1 = 1      # removal probability at lattice 1
 b2 = 0.9      # removal probability at lattice 2
-k11 = 0.5     # steping probability for particle 1 in lattice 1
-k12 = 1    # steping probability for particle 1 to lattice 2
+k11 = 0.1    # steping probability for particle 1 in lattice 1
+k12 = 0.1    # steping probability for particle 1 to lattice 2
 k21 = 0     # steping probability for particle 2 to lattice 1
-k22 = 0.5     # steping probability for particle 2 in lattice 2
+k22 = 0.1     # steping probability for particle 2 in lattice 2
 
-steps = 25000     #steps
+k12_values = [round(i, 2) for i in np.linspace(0,1,11)]#np.linspace(0,1,11)
+
+steps = 30000     #steps
 steady_state = 10000 #10000    #after the transient phase
 
 #init
@@ -89,11 +92,16 @@ def update(i):
             if L2[-i]==0 and rd.rand()<k21:
                 L1[i]=0
                 L2[-i]=2
+                if i == int(N/2):           ###
+                    passed_particles1 +=1   ### #adding to the current in the second lattice (super coarse)
+
 
             #continue in the opposite lane
             elif L1[i-1]==0 and rd.rand()<k21:
                 L1[i]=0
                 L1[i-1]=2
+                if i == int(N/2):           ###
+                    passed_particles1 +=1   ### #adding to the current in the second lattice (super coarse)
 
     #regular site lattice 2
     elif i>N and i<2*N+1:
@@ -118,12 +126,18 @@ def update(i):
             if L1[-i]==0 and rd.rand()<k12:
                 L2[i]=0
                 L1[-i]=1
+                if i == int(N/2):           ###
+                    passed_particles2 +=1   ### #adding to the current in the second lattice (super coarse)
+
 
             #continue in the opposite lane
             elif L2[i-1]==0 and rd.rand()<k12:
                 if not i==0:
                     L2[i]=0
                     L2[i-1]=1
+
+                    if i == int(N/2):           ###
+                        passed_particles2 +=1   ### #adding to the current in the second lattice (super coarse)
 
 
 #lets you update the lattice with optional parameters. This is useful in the Stuck_position()
@@ -429,85 +443,88 @@ def stuck_position():
 
 ###########################################################################
 
-#Working simulation:
-'''
-j = 0
-while True:#j<100:
-    print(j)
-    site = int(input("ch: "))#rd.randint(0,2*N+2)
-    #site = rd.randint(0,2*N+2)
-    #print(site)
-    #update(site)
-    print(update_par(site, 1,1,1,1,1,1,1,1))
-    print(stuck_position())
-    DisplayNice()
-    j+=1
-'''
 
-for i in range(steps):
-    for j in range(2*N+2):
-        site = rd.randint(0,2*N+2)
-        update(site)
+#changing k12:
+for k12 in k12_values:
+    #k12 = k12_values[m]
+    print(k12)
+    #init:
+    current1 = 0
+    current2 = 0
+    densities1 = np.zeros(N)
+    densities2 = np.zeros(N)
 
-    #cutoff (steady state) period
-    if i == steady_state: #we start measuring from 0
-            passed_particles1 = 0
-            passed_particles2 = 0
+    #maybe I should empty the lattice here?
 
-    #update site densities
-    if i>=steady_state:
-        l1 = L1>0           #remove ones and twos -> boolean
-        l1 = l1.astype(int) #make them integers
-        l2 = L2>0           #remove ones and twos -> boolean
-        l2 = l2.astype(int) #make them integers
+    for i in range(steps):
+        for j in range(2*N+2):
+            site = rd.randint(0,2*N+2)
+            update(site)
 
-        for k in range(N):
-            densities1[k] += l1[k]/(steps-steady_state)    #add only a weighted part of the density
-            densities2[k] += l2[k]/(steps-steady_state)    #add only a weighted part of the density
+        #cutoff (steady state) period
+        if i == steady_state: #we start measuring from 0
+                passed_particles1 = 0
+                passed_particles2 = 0
 
-        #DisplayNice()
+        #update site densities
+        if i>=steady_state:
+            l1 = L1>0           #remove ones and twos -> boolean
+            l1 = l1.astype(int) #make them integers
+            l2 = L2>0           #remove ones and twos -> boolean
+            l2 = l2.astype(int) #make them integers
 
-current1 = passed_particles1/(steps-steady_state)
-current2 = passed_particles2/(steps-steady_state)
+            for k in range(N):
+                densities1[k] += l1[k]/(steps-steady_state)    #add only a weighted part of the density
+                densities2[k] += l2[k]/(steps-steady_state)    #add only a weighted part of the density
 
-print('currents: ')
-print(current1, " ",current2 )
-print(densities1)
-print(densities2)
+            #DisplayNice()
 
-#saving the density profile into a txt file:
+    current1 = passed_particles1/(steps-steady_state)
+    current2 = passed_particles2/(steps-steady_state)
 
-Name = "density_profileN%sa1_%sb1_%sa2_%sb2_%s"%(N,a1,b1,a2,b2)
-heading = "site \t DENSITY"
-sites = np.arange(N)
-data = sites,densities1,densities2
-data = np.array(data)
-data = np.transpose(data)
-fmt = "%-10d", "%-10.3f", "%-10.3f"
-np.savetxt(Name, data, fmt = fmt, delimiter = "\t", header = heading)
+    #print('currents: ')
+    #print(current1, " ",current2 )
+    #print(densities1)
+    #print(densities2)
 
+    #saving the density profile into a txt file:
+    '''
+    Name = "density_profileN%sa1_%sb1_%sa2_%sb2_%s"%(N,a1,b1,a2,b2)
+    heading = "site \t DENSITY"
+    sites = np.arange(N)
+    data = sites,densities1,densities2
+    data = np.array(data)
+    data = np.transpose(data)
+    fmt = "%-10d", "%-10.3f", "%-10.3f"
+    np.savetxt(Name, data, fmt = fmt, delimiter = "\t", header = heading)
+    '''
 
 
-#plotting the density profiles
-fig, (ax1, ax2) = plt.subplots(2)
-fig.suptitle('Two-way lattice, sites=%s and steps=%s \n parameters:  a1=%s, b1=%s, a2=%s, b2=%s, \n k11=%s, k12=%s, k21=%s, k22=%s'%(N, steps, a1, b1,a2,b2,k11,k12,k21,k22))
-ax1.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
-ax1.set_ylim([0,1.1])
-ax1.set_xlim([0,N])
-ax1.set_xlabel('site')
-ax1.set_ylabel('average occupancy')
-props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-ax1.text(0.05, 0.95, "Current = %s"%round(current1,3), transform=ax1.transAxes, fontsize=9,
-        verticalalignment='top', bbox=props)
-ax1.legend(loc = 1)
-ax2.plot(range(1,N+1),densities2, linestyle = '-', color = 'red', label = 'Lattice 2')
-ax2.set_ylim([0,1.1])
-ax2.set_xlim([0,N])
-ax2.set_xlabel('site')
-ax2.set_ylabel('average occupancy')
-ax2.legend(loc = 1)     #loc 0  = best, loc 1 = right top
-ax2.text(0.05, 0.95, "Current = %s"%round(current2,3), transform=ax2.transAxes, fontsize=9,
-        verticalalignment='top', bbox=props)
-t= now.strftime("%H:%M:%S")
-plt.savefig('../../img/two-way/DensityProfile-N%sa1_%sb1_%s-a2_%sb2_%s-%s.png'%(N,a1,b1,a2,b2,t))
-plt.show()
+    #plotting the density profiles
+    fig, (ax1, ax2) = plt.subplots(2)
+    fig.suptitle('Two-way lattice, sites=%s and steps=%s \n parameters: a1=%s, a2=%s, b1=%s, b2=%s, k11=%s, k12=%s, k21=%s, k22=%s'%(N, steps, a1, a2,b1,b2,k11,k12,k21,k22))
+    ax1.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+    ax1.set_ylim([0,1.1])
+    ax1.set_xlim([0,N])
+    ax1.set_xlabel('site')
+    ax1.set_ylabel('average occupancy')
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    ax1.text(0.05, 0.95, "Current = %s"%round(current1,3), transform=ax1.transAxes, fontsize=9,
+            verticalalignment='top', bbox=props)
+    ax1.legend(loc = 1)
+    ax2.plot(range(1,N+1),densities2, linestyle = '-', color = 'red', label = 'Lattice 2')
+    ax2.set_ylim([0,1.1])
+    ax2.set_xlim([0,N])
+    ax2.set_xlabel('site')
+    ax2.set_ylabel('average occupancy')
+    ax2.legend(loc = 1)     #loc 0  = best, loc 1 = right top
+    ax2.text(0.05, 0.95, "Current = %s"%round(current2,3), transform=ax2.transAxes, fontsize=9,
+            verticalalignment='top', bbox=props)
+    fig.set_size_inches(10,6)
+    #t= now.strftime("%H:%M:%S")
+    outpath = '../../img/two-way/multiple/'
+    plt.savefig(path.join(outpath,"%s-.png"%(k12)))#plt.savefig('../../img/two-way/multiple/DensityProfile-N%sa1_%sb1_%s-a2_%sb2_%s-%s%s.png'%(N,a1,b1,a2,b2,k12,t))
+    #plt.show()
+    fig.clf()   #closes the figures (for multiple imgs)
+    plt.cla()
+    plt.close('all')
