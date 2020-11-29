@@ -13,16 +13,16 @@ from os import path
 
 #parameters
 N = 20     # number of sites
-a1 = 1      # injection probability at lattice 1
-a2 = 0      # injection probability at lattice 2
-b1 = 1      # removal probability at lattice 1
-b2 = 1      # removal probability at lattice 2
-k11 = 0.2     # steping probability for particle 1 in lattice 1
-k12 = 1    # steping probability for particle 1 to lattice 2
-k21 = 0     # steping probability for particle 2 to lattice 1
-k22 = 1     # steping probability for particle 2 in lattice 2
+a1_vec = [0.2, 0.5, 1 , 1]      # injection probability at lattice 1
+a2_vec = [0,0,0,0]      # injection probability at lattice 2
+b1_vec = [1,1,1,0.2]      # removal probability at lattice 1
+b2_vec = [1,1,1,1]      # removal probability at lattice 2
+k11_vec = [1,1,1,1]     # steping probability for particle 1 in lattice 1
+k12_vec = [0,0,0,0]    # steping probability for particle 1 to lattice 2
+k21_vec = [0,0,0,0]     # steping probability for particle 2 to lattice 1
+k22_vec = [1,1,1,1]     # steping probability for particle 2 in lattice 2
 
-steps = 200      #steps
+steps = 1000      #steps
 steady_state = 20 #10000    #after the transient phase
 
 
@@ -142,7 +142,7 @@ def update_anim(i,ax):
                 positions1_1[0] = positions1_1[0]-1+(k+1)/frames
                 vis.lattice_points(positions1_1, 0, "b", ax)
 
-                outpath = '../../img/visualiser/'
+                #outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
                 j+=1
 
@@ -159,7 +159,7 @@ def update_anim(i,ax):
             positions1_2[-1] = positions1_2[-1]-(k+1)/frames
             vis.lattice_points(positions1_2, 0, "r", ax)
 
-            outpath = '../../img/visualiser/'
+            #outpath = '../../img/visualiser/'
             plt.savefig(path.join(outpath,"%s-.png"%(j)))
             j+=1
         L1[0]=0
@@ -178,7 +178,7 @@ def update_anim(i,ax):
                 positions2_2[0] = positions2_2[0]-1+(k+1)/frames
                 vis.lattice_points(N-1-positions2_2, 1, "r", ax)
 
-                outpath = '../../img/visualiser/'
+                #outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
                 j+=1
 
@@ -195,7 +195,7 @@ def update_anim(i,ax):
             positions2_1[-1] = positions2_1[-1]-(k+1)/frames
             vis.lattice_points(N-1-positions2_1, 1, "b", ax)
 
-            outpath = '../../img/visualiser/'
+            #outpath = '../../img/visualiser/'
             plt.savefig(path.join(outpath,"%s-.png"%(j)))
             j+=1
         L2[0]=0
@@ -214,7 +214,7 @@ def update_anim(i,ax):
                     positions1_1[-1] = positions1_1[-1]+(k+1)/frames
                 vis.lattice_points(positions1_1, 0, "b", ax)
 
-                outpath = '../../img/visualiser/'
+                #outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
                 j+=1
             L1[-1]=0
@@ -232,7 +232,7 @@ def update_anim(i,ax):
                     positions2_2[-1] = positions2_2[-1]+(k+1)/frames
                 vis.lattice_points(N-1-positions2_2, 1, "r", ax)
 
-                outpath = '../../img/visualiser/'
+                #outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
                 j+=1
             L2[-1]=0
@@ -255,7 +255,7 @@ def update_anim(i,ax):
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
                     vis.lattice_points(positions1_1, 0, "b", ax)
 
-                    outpath = '../../img/visualiser/'
+                    #outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
                 L1[i]=0
@@ -276,7 +276,7 @@ def update_anim(i,ax):
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
                         vis.lattice_points(positions1_1[ind], (k+1)/frames, "b", ax)
                     vis.lattice_points(np.delete(positions1_1, ind), 0, "b", ax)
-                    outpath = '../../img/visualiser/'
+                    #outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
                 L1[i]=0
@@ -300,7 +300,7 @@ def update_anim(i,ax):
                         positions1_2[ind] = positions1_2[ind]-(k+1)/frames
                         vis.lattice_points(positions1_2[ind], (k+1)/frames, "r", ax)
                     vis.lattice_points(np.delete(positions1_2, ind), 0, "r", ax)
-                    outpath = '../../img/visualiser/'
+                    #outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
 
@@ -320,7 +320,7 @@ def update_anim(i,ax):
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
                     vis.lattice_points(positions1_2, 0, "b", ax)
 
-                    outpath = '../../img/visualiser/'
+                    #outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
                 L1[i]=0
@@ -348,7 +348,7 @@ def update_anim(i,ax):
                         positions2_2[ind] = positions2_2[ind]+(k+1)/frames
                     vis.lattice_points(N-1-positions2_2, 1, "r", ax)
 
-                    outpath = '../../img/visualiser/'
+                    #outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
                 L2[i]=0
@@ -367,7 +367,7 @@ def update_anim(i,ax):
                         positions2_2[ind] = positions2_2[ind]+(k+1)/frames
                         vis.lattice_points(N-1-positions2_2[ind], 1-(k+1)/frames, "r", ax)
                     vis.lattice_points(N-1-np.delete(positions2_2, ind), 1, "r", ax)
-                    outpath = '../../img/visualiser/'
+                    #outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
                 L2[i]=0
@@ -382,13 +382,13 @@ def update_anim(i,ax):
 
                     vis.lattice_points(N-1-positions2_2, 1, "r", ax)
                     vis.lattice_points(positions1_1, 0, "b", ax)
-                    vis.lattice_points(positions1_2, 0, "r", ax)
+                    vis.lattice_points(positions1_2, 1, "r", ax)
                     if np.size(positions2_1)>0:
                         ind = np.where(positions2_1==i)
                         positions2_1[ind] = positions2_1[ind]-(k+1)/frames
                         vis.lattice_points(N-1-positions2_1[ind], 1-(k+1)/frames, "b", ax)
-                    vis.lattice_points(N-1-np.delete(positions2_1, ind), 1, "b", ax)
-                    outpath = '../../img/visualiser/'
+                    vis.lattice_points(N-1-np.delete(positions2_1, ind), 0, "b", ax)
+                    #outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
                 L2[i]=0
@@ -409,7 +409,7 @@ def update_anim(i,ax):
                             positions2_1[ind] = positions2_1[ind]-(k+1)/frames
                             vis.lattice_points(N-1-positions2_1[ind], 1, "b", ax)
                         vis.lattice_points(np.delete(N-1-positions2_1, ind), 1, "b", ax)
-                        outpath = '../../img/visualiser/'
+                        #outpath = '../../img/visualiser/'
                         plt.savefig(path.join(outpath,"%s-.png"%(j)))
                         j+=1
                     L2[i]=0
@@ -419,7 +419,7 @@ def plot_init():
 
     fig, ax = plt.subplots()
     ax.set_aspect(aspect=1)
-    vis.lattice_grid(N,2,ax)###
+    vis.lattice_grid(N,1,ax)###
     positions1_1, positions1_2, positions2_2, positions2_1= vis.lattice2positions(L1, L2,ax)
     return positions1_1, positions1_2, positions2_2, positions2_1, ax
 
@@ -734,31 +734,44 @@ def stuck_position():
 
 
 #Working simulation:
+for i in range(len(a1_vec)):
+    L1 = np.zeros(N)    #initialize lattice 1
+    L2 = np.zeros(N)    #init lattice 2
+    a1 = a1_vec[i]
+    a2 = a2_vec[i]
+    b1 = b1_vec[i]
+    b2 = b2_vec[i]
+    k11 = k11_vec[i]
+    k12 = k12_vec[i]
+    k21 = k21_vec[i]
+    k22 = k22_vec[i]
 
+    while j<steps:#True:#
+        print("j: ", j)
+        fig, ax = plt.subplots()
+        ax.set_aspect(aspect=1)
+        global outpath
+        outpath = '../../img/visualiser%s/'%(i)
+        #vis.lattice_grid(N,1,ax)#vis.lattice_grid(N,2,ax)
 
-while j<steps:#True:#
-    print("j: ", j)
-    fig, ax = plt.subplots()
-    ax.set_aspect(aspect=1)
-    #vis.lattice_grid(N,1,ax)#vis.lattice_grid(N,2,ax)
+        #site = int(input("ch: "))#rd.randint(0,2*N+2)
+        site = rd.randint(0,2*N+2)
+        #print(site)
+        update_anim(site,ax)
+        #print(update_par(site, 1,1,1,1,1,1,1,1))
+        #print(stuck_position())
+        DisplayNice()
 
-    #site = int(input("ch: "))#rd.randint(0,2*N+2)
-    site = rd.randint(0,2*N+2)
-    #print(site)
-    update_anim(site,ax)
-    #print(update_par(site, 1,1,1,1,1,1,1,1))
-    #print(stuck_position())
-    DisplayNice()
+        positions1_1, positions1_2, positions2_2, positions2_1 = vis.lattice2positions(L1, L2,ax)
+        vis.lattice_points(positions1_1, 0, "b", ax)
+        vis.lattice_points(positions1_2, 0, "r", ax)
+        vis.lattice_points(N-1-positions2_2, 1, "r", ax)#to flip it N-1-positions_vect
+        vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+        plt.close('all')
 
-    positions1_1, positions1_2, positions2_2, positions2_1 = vis.lattice2positions(L1, L2,ax)
-    vis.lattice_points(positions1_1, 0, "b", ax)
-    vis.lattice_points(positions1_2, 0, "r", ax)
-    vis.lattice_points(N-1-positions2_2, 1, "r", ax)#to flip it N-1-positions_vect
-    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
-    plt.close('all')
-    #outpath = '../../img/visualiser/'
-    #plt.savefig(path.join(outpath,"%s-.png"%(j)))###
-    #j+=1###
+        #plt.savefig(path.join(outpath,"%s-.png"%(j)))###
+        #j+=1###
+    j = 0
 
 
 '''

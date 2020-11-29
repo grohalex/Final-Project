@@ -17,13 +17,13 @@ a1 = 1      # injection probability at lattice 1
 a2 = 0      # injection probability at lattice 2
 b1 = 1      # removal probability at lattice 1
 b2 = 1      # removal probability at lattice 2
-k11 = 0.2     # steping probability for particle 1 in lattice 1
+k11 = 1     # steping probability for particle 1 in lattice 1
 k12 = 1    # steping probability for particle 1 to lattice 2
 k21 = 0     # steping probability for particle 2 to lattice 1
 k22 = 1     # steping probability for particle 2 in lattice 2
 
-steps = 200      #steps
-steady_state = 20 #10000    #after the transient phase
+steps = 5000      #steps
+steady_state = 0 #10000    #after the transient phase
 
 
 #animation
@@ -33,7 +33,10 @@ j = 0       #init counter
 #init
 L1 = np.zeros(N)    #initialize lattice 1
 L2 = np.zeros(N)    #initialize lattice 2
-
+densities1 = np.zeros(N) #average occupation density for each site in lattice 1
+densities2 = np.zeros(N) #average occupation density for each site in lattice 2
+densities1_sum = np.zeros(N) #in order to get momental densities we create the entire historical sum
+densities2_sum = np.zeros(N) #in order to get momental densities we create the entire historical sum
 
 #update ftion
 def update(i):
@@ -119,8 +122,10 @@ def update(i):
                     L2[i]=0
                     L2[i-1]=1
 
-def update_anim(i,ax):
+def update_anim(i,ax1,ax2):
     global j
+
+
     #insertion a1
     if i==0:
         if L1[0]==0 and rd.rand()<a1:
@@ -134,13 +139,23 @@ def update_anim(i,ax):
                 positions1_1, positions1_2, positions2_2, positions2_1 = vis.lattice2positions(L1, L2,ax)
                 '''
                 L1[0]=1
-                positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                positions1_1, positions1_2, positions2_2, positions2_1,ax1,ax2 = plot_init()
 
-                vis.lattice_points(positions1_2, 0, "r", ax)
-                vis.lattice_points(N-1-positions2_2, 1, "r", ax)#to flip it N-1-positions_vect
-                vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                vis.lattice_points(positions1_2, 0, "r", ax1)
+                vis.lattice_points(N-1-positions2_2, 1, "r", ax1)#to flip it N-1-positions_vect
+                vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                 positions1_1[0] = positions1_1[0]-1+(k+1)/frames
-                vis.lattice_points(positions1_1, 0, "b", ax)
+                vis.lattice_points(positions1_1, 0, "b", ax1)
+
+                #density plotting
+                ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                #ax2.set_ylim([0,1.0])
+                #ax2.set_xlim([0,N])
+                ax2.set_xlabel('site')
+                ax2.set_ylabel('average occupancy')
+                ax2.legend(loc = 1)
+
 
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -151,13 +166,22 @@ def update_anim(i,ax):
     #in case there site = 1 there is particle 2 which should leave
     elif i==1 and L1[0]==2 and rd.rand()<b2: #in case there is particle 2 it leaves
         for k in range(frames):
-            positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+            positions1_1, positions1_2, positions2_2, positions2_1,ax1,ax2 = plot_init()
 
-            vis.lattice_points(positions1_1, 0, "b", ax)
-            vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-            vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+            vis.lattice_points(positions1_1, 0, "b", ax1)
+            vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+            vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
             positions1_2[-1] = positions1_2[-1]-(k+1)/frames
-            vis.lattice_points(positions1_2, 0, "r", ax)
+            vis.lattice_points(positions1_2, 0, "r", ax1)
+
+            #density plotting
+            ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+            ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+            #ax2.set_ylim([0,1.0])
+            #ax2.set_xlim([0,N])
+            ax2.set_xlabel('site')
+            ax2.set_ylabel('average occupancy')
+            ax2.legend(loc = 1)
 
             outpath = '../../img/visualiser/'
             plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -170,13 +194,22 @@ def update_anim(i,ax):
         if L2[0]==0 and rd.rand()<a2:
             L2[0]=2
             for k in range(frames):
-                positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                positions1_1, positions1_2, positions2_2, positions2_1,ax1,ax2 = plot_init()
 
-                vis.lattice_points(positions1_1, 0, "b", ax)
-                vis.lattice_points(positions1_2, 0, "r", ax)
-                vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                vis.lattice_points(positions1_1, 0, "b", ax1)
+                vis.lattice_points(positions1_2, 0, "r", ax1)
+                vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                 positions2_2[0] = positions2_2[0]-1+(k+1)/frames
-                vis.lattice_points(N-1-positions2_2, 1, "r", ax)
+                vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+
+                #density plotting
+                ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                #ax2.set_ylim([0,1.0])
+                #ax2.set_xlim([0,N])
+                ax2.set_xlabel('site')
+                ax2.set_ylabel('average occupancy')
+                ax2.legend(loc = 1)
 
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -187,13 +220,22 @@ def update_anim(i,ax):
     elif i==N+2 and L2[0]==1 and rd.rand()<b2: #in case there is particle 1 it leaves
 
         for k in range(frames):
-            positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+            positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-            vis.lattice_points(positions1_1, 0, "b", ax)
-            vis.lattice_points(positions1_2, 0, "r", ax)
-            vis.lattice_points(N-1-positions2_2, 1, "r", ax)
+            vis.lattice_points(positions1_1, 0, "b", ax1)
+            vis.lattice_points(positions1_2, 0, "r", ax1)
+            vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
             positions2_1[-1] = positions2_1[-1]-(k+1)/frames
-            vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+            vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
+
+            #density plotting
+            ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+            ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+            #ax2.set_ylim([0,1.0])
+            #ax2.set_xlim([0,N])
+            ax2.set_xlabel('site')
+            ax2.set_ylabel('average occupancy')
+            ax2.legend(loc = 1)
 
             outpath = '../../img/visualiser/'
             plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -205,14 +247,23 @@ def update_anim(i,ax):
         if L1[-1]>0:
 
             for k in range(frames):
-                positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-                vis.lattice_points(positions1_2, 0, "r", ax)
-                vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+                vis.lattice_points(positions1_2, 0, "r", ax1)
+                vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                 if np.size(positions1_1)>0:
                     positions1_1[-1] = positions1_1[-1]+(k+1)/frames
-                vis.lattice_points(positions1_1, 0, "b", ax)
+                vis.lattice_points(positions1_1, 0, "b", ax1)
+
+                #density plotting
+                ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                #ax2.set_ylim([0,1.0])
+                #ax2.set_xlim([0,N])
+                ax2.set_xlabel('site')
+                ax2.set_ylabel('average occupancy')
+                ax2.legend(loc = 1)
 
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -223,14 +274,23 @@ def update_anim(i,ax):
     elif i==2*N+1 and rd.rand()<b2:
         if L2[-1]>0:
             for k in range(frames):
-                positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                vis.lattice_points(positions1_1, 0, "b", ax)
-                vis.lattice_points(positions1_2, 0, "r", ax)
-                vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                vis.lattice_points(positions1_1, 0, "b", ax1)
+                vis.lattice_points(positions1_2, 0, "r", ax1)
+                vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                 if np.size(positions2_2)>0:
                     positions2_2[-1] = positions2_2[-1]+(k+1)/frames
-                vis.lattice_points(N-1-positions2_2, 1, "r", ax)
+                vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+
+                #density plotting
+                ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                #ax2.set_ylim([0,1.0])
+                #ax2.set_xlim([0,N])
+                ax2.set_xlabel('site')
+                ax2.set_ylabel('average occupancy')
+                ax2.legend(loc = 1)
 
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -245,15 +305,24 @@ def update_anim(i,ax):
             #make a step
             if L1[i+1]==0 and rd.rand()<k11:
                 for k in range(frames):
-                    positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                    positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                    vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-                    vis.lattice_points(positions1_2, 0, "r", ax)
-                    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                    vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+                    vis.lattice_points(positions1_2, 0, "r", ax1)
+                    vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                     if np.size(positions1_1)>0:
                         ind = np.where(positions1_1==i)
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
-                    vis.lattice_points(positions1_1, 0, "b", ax)
+                    vis.lattice_points(positions1_1, 0, "b", ax1)
+
+                    #density plotting
+                    ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                    ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                    #ax2.set_ylim([0,1.0])
+                    #ax2.set_xlim([0,N])
+                    ax2.set_xlabel('site')
+                    ax2.set_ylabel('average occupancy')
+                    ax2.legend(loc = 1)
 
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -266,16 +335,26 @@ def update_anim(i,ax):
             #overtake
             elif L1[i+1]>0 and L2[-i-2]==0 and rd.rand()<k12:
                 for k in range(frames):
-                    positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                    positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                    vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-                    vis.lattice_points(positions1_2, 0, "r", ax)
-                    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                    vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+                    vis.lattice_points(positions1_2, 0, "r", ax1)
+                    vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                     if np.size(positions1_1)>0:
                         ind = np.where(positions1_1==i)
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
-                        vis.lattice_points(positions1_1[ind], (k+1)/frames, "b", ax)
-                    vis.lattice_points(np.delete(positions1_1, ind), 0, "b", ax)
+                        vis.lattice_points(positions1_1[ind], (k+1)/frames, "b", ax1)
+                    vis.lattice_points(np.delete(positions1_1, ind), 0, "b", ax1)
+
+                    #density plotting
+                    ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                    ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                    #ax2.set_ylim([0,1.0])
+                    #ax2.set_xlim([0,N])
+                    ax2.set_xlabel('site')
+                    ax2.set_ylabel('average occupancy')
+                    ax2.legend(loc = 1)
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -290,16 +369,26 @@ def update_anim(i,ax):
             if L2[-i]==0 and rd.rand()<k21:
 
                 for k in range(frames):
-                    positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                    positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                    vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-                    vis.lattice_points(positions1_1, 0, "b", ax)
-                    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                    vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+                    vis.lattice_points(positions1_1, 0, "b", ax1)
+                    vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                     if np.size(positions1_2)>0:
                         ind = np.where(positions1_2==i)
                         positions1_2[ind] = positions1_2[ind]-(k+1)/frames
-                        vis.lattice_points(positions1_2[ind], (k+1)/frames, "r", ax)
-                    vis.lattice_points(np.delete(positions1_2, ind), 0, "r", ax)
+                        vis.lattice_points(positions1_2[ind], (k+1)/frames, "r", ax1)
+                    vis.lattice_points(np.delete(positions1_2, ind), 0, "r", ax1)
+
+                    #density plotting
+                    ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                    ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                    #ax2.set_ylim([0,1.0])
+                    #ax2.set_xlim([0,N])
+                    ax2.set_xlabel('site')
+                    ax2.set_ylabel('average occupancy')
+                    ax2.legend(loc = 1)
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -310,15 +399,24 @@ def update_anim(i,ax):
             #continue in the opposite lane
             elif L1[i-1]==0 and rd.rand()<k21:
                 for k in range(frames):
-                    positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                    positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                    vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-                    vis.lattice_points(positions1_2, 0, "r", ax)
-                    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                    vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+                    vis.lattice_points(positions1_2, 0, "r", ax1)
+                    vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                     if np.size(positions1_1)>0:
                         ind = np.where(positions1_1==i)
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
-                    vis.lattice_points(positions1_2, 0, "b", ax)
+                    vis.lattice_points(positions1_2, 0, "b", ax1)
+
+                    #density plotting
+                    ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                    ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                    #ax2.set_ylim([0,1.0])
+                    #ax2.set_xlim([0,N])
+                    ax2.set_xlabel('site')
+                    ax2.set_ylabel('average occupancy')
+                    ax2.legend(loc = 1)
 
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -338,15 +436,24 @@ def update_anim(i,ax):
             #make a step
             if L2[i+1]==0 and rd.rand()<k22:
                 for k in range(frames):
-                    positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                    positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                    vis.lattice_points(positions1_1, 0, "b", ax)
-                    vis.lattice_points(positions1_2, 0, "r", ax)
-                    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                    vis.lattice_points(positions1_1, 0, "b", ax1)
+                    vis.lattice_points(positions1_2, 0, "r", ax1)
+                    vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                     if np.size(positions2_2)>0:
                         ind = np.where(positions2_2==i)
                         positions2_2[ind] = positions2_2[ind]+(k+1)/frames
-                    vis.lattice_points(N-1-positions2_2, 1, "r", ax)
+                    vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+
+                    #density plotting
+                    ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                    ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                    #ax2.set_ylim([0,1.0])
+                    #ax2.set_xlim([0,N])
+                    ax2.set_xlabel('site')
+                    ax2.set_ylabel('average occupancy')
+                    ax2.legend(loc = 1)
 
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -357,16 +464,26 @@ def update_anim(i,ax):
             #overtake
             elif L2[i+1]>0 and L1[-i-2]==0 and rd.rand()<k21:
                 for k in range(frames):
-                    positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                    positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                    vis.lattice_points(positions1_1, 0, "b", ax)
-                    vis.lattice_points(positions1_2, 0, "r", ax)
-                    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+                    vis.lattice_points(positions1_1, 0, "b", ax1)
+                    vis.lattice_points(positions1_2, 0, "r", ax1)
+                    vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
                     if np.size(positions2_2)>0:
                         ind = np.where(positions2_2==i)
                         positions2_2[ind] = positions2_2[ind]+(k+1)/frames
-                        vis.lattice_points(N-1-positions2_2[ind], 1-(k+1)/frames, "r", ax)
-                    vis.lattice_points(N-1-np.delete(positions2_2, ind), 1, "r", ax)
+                        vis.lattice_points(N-1-positions2_2[ind], 1-(k+1)/frames, "r", ax1)
+                    vis.lattice_points(N-1-np.delete(positions2_2, ind), 1, "r", ax1)
+
+                    #density plotting
+                    ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                    ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                    #ax2.set_ylim([0,1.0])
+                    #ax2.set_xlim([0,N])
+                    ax2.set_xlabel('site')
+                    ax2.set_ylabel('average occupancy')
+                    ax2.legend(loc = 1)
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -378,16 +495,26 @@ def update_anim(i,ax):
             #finish overtaking
             if L1[-i]==0 and rd.rand()<k12:
                 for k in range(frames):
-                    positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                    positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                    vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-                    vis.lattice_points(positions1_1, 0, "b", ax)
-                    vis.lattice_points(positions1_2, 0, "r", ax)
+                    vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+                    vis.lattice_points(positions1_1, 0, "b", ax1)
+                    vis.lattice_points(positions1_2, 0, "r", ax1)
                     if np.size(positions2_1)>0:
                         ind = np.where(positions2_1==i)
                         positions2_1[ind] = positions2_1[ind]-(k+1)/frames
-                        vis.lattice_points(N-1-positions2_1[ind], 1-(k+1)/frames, "b", ax)
-                    vis.lattice_points(N-1-np.delete(positions2_1, ind), 1, "b", ax)
+                        vis.lattice_points(N-1-positions2_1[ind], 1-(k+1)/frames, "b", ax1)
+                    vis.lattice_points(N-1-np.delete(positions2_1, ind), 1, "b", ax1)
+
+                    #density plotting
+                    ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                    ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                    #ax2.set_ylim([0,1.0])
+                    #ax2.set_xlim([0,N])
+                    ax2.set_xlabel('site')
+                    ax2.set_ylabel('average occupancy')
+                    ax2.legend(loc = 1)
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -399,16 +526,26 @@ def update_anim(i,ax):
             elif L2[i-1]==0 and rd.rand()<k12:
                 if not i==0:
                     for k in range(frames):
-                        positions1_1, positions1_2, positions2_2, positions2_1,ax = plot_init()
+                        positions1_1, positions1_2, positions2_2, positions2_1,ax1 ,ax2= plot_init()
 
-                        vis.lattice_points(N-1-positions2_2, 1, "r", ax)
-                        vis.lattice_points(positions1_1, 0, "b", ax)
-                        vis.lattice_points(positions1_2, 0, "r", ax)
+                        vis.lattice_points(N-1-positions2_2, 1, "r", ax1)
+                        vis.lattice_points(positions1_1, 0, "b", ax1)
+                        vis.lattice_points(positions1_2, 0, "r", ax1)
                         if np.size(positions2_1)>0:
                             ind = np.where(positions2_1==i)
                             positions2_1[ind] = positions2_1[ind]-(k+1)/frames
-                            vis.lattice_points(N-1-positions2_1[ind], 1, "b", ax)
-                        vis.lattice_points(np.delete(N-1-positions2_1, ind), 1, "b", ax)
+                            vis.lattice_points(N-1-positions2_1[ind], 1, "b", ax1)
+                        vis.lattice_points(np.delete(N-1-positions2_1, ind), 1, "b", ax1)
+
+                        #density plotting
+                        ax2.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
+                        ax2.plot(range(1,N+1),np.flip(densities2), linestyle = '-', color = 'red', label = 'Lattice 2')
+                        #ax2.set_ylim([0,1.0])
+                        #ax2.set_xlim([0,N])
+                        ax2.set_xlabel('site')
+                        ax2.set_ylabel('average occupancy')
+                        ax2.legend(loc = 1)
+
                         outpath = '../../img/visualiser/'
                         plt.savefig(path.join(outpath,"%s-.png"%(j)))
                         j+=1
@@ -417,11 +554,11 @@ def update_anim(i,ax):
                     plt.close('all')
 def plot_init():
 
-    fig, ax = plt.subplots()
-    ax.set_aspect(aspect=1)
-    vis.lattice_grid(N,2,ax)###
-    positions1_1, positions1_2, positions2_2, positions2_1= vis.lattice2positions(L1, L2,ax)
-    return positions1_1, positions1_2, positions2_2, positions2_1, ax
+    fig, (ax1, ax2) = plt.subplots(2)
+    ax1.set_aspect(aspect=1)
+    vis.lattice_grid(N,2,ax1)###
+    positions1_1, positions1_2, positions2_2, positions2_1= vis.lattice2positions(L1, L2,ax1)
+    return positions1_1, positions1_2, positions2_2, positions2_1, ax1, ax2
 
 
 
@@ -729,36 +866,45 @@ def stuck_position():
 #        print('omg no')
 
 ###########################################################################
-
-#init visulaser
-
-
-#Working simulation:
-
-
+step = 0
 while j<steps:#True:#
     print("j: ", j)
-    fig, ax = plt.subplots()
-    ax.set_aspect(aspect=1)
+
+    fig, (ax1, ax2) = plt.subplots(2)
+    ax1.set_aspect(aspect=1)
     #vis.lattice_grid(N,1,ax)#vis.lattice_grid(N,2,ax)
 
     #site = int(input("ch: "))#rd.randint(0,2*N+2)
     site = rd.randint(0,2*N+2)
     #print(site)
-    update_anim(site,ax)
+    update_anim(site,ax1, ax2)
     #print(update_par(site, 1,1,1,1,1,1,1,1))
     #print(stuck_position())
     DisplayNice()
 
-    positions1_1, positions1_2, positions2_2, positions2_1 = vis.lattice2positions(L1, L2,ax)
-    vis.lattice_points(positions1_1, 0, "b", ax)
-    vis.lattice_points(positions1_2, 0, "r", ax)
-    vis.lattice_points(N-1-positions2_2, 1, "r", ax)#to flip it N-1-positions_vect
-    vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+    positions1_1, positions1_2, positions2_2, positions2_1 = vis.lattice2positions(L1, L2,ax1)
+    vis.lattice_points(positions1_1, 0, "b", ax1)
+    vis.lattice_points(positions1_2, 0, "r", ax1)
+    vis.lattice_points(N-1-positions2_2, 1, "r", ax1)#to flip it N-1-positions_vect
+    vis.lattice_points(N-1-positions2_1, 1, "b", ax1)
     plt.close('all')
-    #outpath = '../../img/visualiser/'
-    #plt.savefig(path.join(outpath,"%s-.png"%(j)))###
-    #j+=1###
+
+    #update site densities
+    step+=1
+    if step>=steady_state:
+        l1 = L1>0           #remove ones and twos -> boolean
+        l1 = l1.astype(int) #make them integers
+        l2 = L2>0           #remove ones and twos -> boolean
+        l2 = l2.astype(int) #make them integers
+
+        for k in range(N):
+            densities1_sum[k] += l1[k]    #add to the density
+            densities2_sum[k] += l2[k]    #add to the density
+            densities1[k] = densities1_sum[k]/step
+            densities2[k] = densities2_sum[k]/step
+
+
+
 
 
 '''
