@@ -15,14 +15,14 @@ from os import path
 N = 20     # number of sites
 a1 = 1      # injection probability at lattice 1
 a2 = 0      # injection probability at lattice 2
-b1 = 1      # removal probability at lattice 1
+b1 = 0.1      # removal probability at lattice 1
 b2 = 1      # removal probability at lattice 2
-k11 = 0.2     # steping probability for particle 1 in lattice 1
-k12 = 1    # steping probability for particle 1 to lattice 2
+k11 = 1     # steping probability for particle 1 in lattice 1
+k12 = 0    # steping probability for particle 1 to lattice 2
 k21 = 0     # steping probability for particle 2 to lattice 1
 k22 = 1     # steping probability for particle 2 in lattice 2
 
-steps = 200      #steps
+steps = 1000      #steps
 steady_state = 20 #10000    #after the transient phase
 
 
@@ -419,7 +419,7 @@ def plot_init():
 
     fig, ax = plt.subplots()
     ax.set_aspect(aspect=1)
-    vis.lattice_grid(N,2,ax)###
+    vis.lattice_grid(N,1,ax)###
     positions1_1, positions1_2, positions2_2, positions2_1= vis.lattice2positions(L1, L2,ax)
     return positions1_1, positions1_2, positions2_2, positions2_1, ax
 

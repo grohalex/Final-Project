@@ -17,20 +17,20 @@ a1 = 1      # injection probability at lattice 1
 a2 = 0     # injection probability at lattice 2
 b1 = 1      # removal probability at lattice 1
 b2 = 1      # removal probability at lattice 2
-k11 = 0.1     # steping probability for particle 1 in lattice 1
+k11 = 0.3     # steping probability for particle 1 in lattice 1
 k12 = 1    # steping probability for particle 1 to lattice 2
 k21 = 0     # steping probability for particle 2 to lattice 1
 k22 = 1     # steping probability for particle 2 in lattice 2
 
-steps = 40000*N                 #steps
-steady_state =  25000*N          #after the transient phase we start the animation
-precomputation = steps-steady_state - 1000  #when it only records the density prof but does not visualise
+steps = 1000#40000*N                 #steps
+steady_state =  0#25000*N          #after the transient phase we start the animation
+precomputation = 0#steps-steady_state - 1000  #when it only records the density prof but does not visualise
 
 
 #animation
 frames = 5  #how many transition images we have
 j = 0       #init counter
-d_low = 0.0 #density plot bounds
+d_low = 0.1 #density plot bounds
 d_high = 0.9 #density plot bounds
 
 #init

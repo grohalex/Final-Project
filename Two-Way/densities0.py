@@ -490,7 +490,7 @@ np.savetxt(Name, data, fmt = fmt, delimiter = "\t", header = heading)
 
 #plotting the density profiles
 fig, (ax1, ax2) = plt.subplots(2)
-fig.suptitle('Two-way lattice, sites=%s and steps=%s \n parameters:  a1=%s, b1=%s, a2=%s, b2=%s, \n k11=%s, k12=%s, k21=%s, k22=%s'%(N, steps, a1, b1,a2,b2,k11,k12,k21,k22))
+fig.suptitle('Two-way lattice, sites=%s  \n parameters:  a1=%s, b1=%s, a2=%s, b2=%s, \n k11=%s, k12=%s, k22=%s, k21=%s'%(N, steps, a1, b1,a2,b2,k11,k12,k22,k21))
 ax1.plot(range(1,N+1),densities1, linestyle = '-', color = 'blue', label = 'Lattice 1')
 ax1.set_ylim([0,1.1])
 ax1.set_xlim([0,N])
