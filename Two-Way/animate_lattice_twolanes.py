@@ -14,17 +14,17 @@ from os import path
 #parameters
 N = 15     # number of sites
 a1 = 1      # injection probability at lattice 1
-a2 = 0      # injection probability at lattice 2
-b1 = 1      # removal probability at lattice 1
-b2 = 1      # removal probability at lattice 2
+a2 = 1      # injection probability at lattice 2
+b1 = 0.6      # removal probability at lattice 1
+b2 = 0.6      # removal probability at lattice 2
 k11 = 1     # steping probability for particle 1 in lattice 1
-k12 = 0    # steping probability for particle 1 to lattice 2
-k21 = 0     # steping probability for particle 2 to lattice 1
+k12 = 1    # steping probability for particle 1 to lattice 2
+k21 = 1     # steping probability for particle 2 to lattice 1
 k22 = 1     # steping probability for particle 2 in lattice 2
 
-steps = 1000      #steps
+steps = 2000      #steps
 steady_state = 20 #10000    #after the transient phase
-
+plot_step = 1       # do we want to record the step we go through
 
 #animation
 frames = 5  #how many transition images we have
@@ -142,6 +142,10 @@ def update_anim(i,ax):
                 positions1_1[0] = positions1_1[0]-1+(k+1)/frames
                 vis.lattice_points(positions1_1, 0, "b", ax)
 
+                if plot_step:
+                    step = int(j/5)
+                    plt.title("step: %s "%(step))
+
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
                 j+=1
@@ -158,6 +162,10 @@ def update_anim(i,ax):
             vis.lattice_points(N-1-positions2_1, 1, "b", ax)
             positions1_2[-1] = positions1_2[-1]-(k+1)/frames
             vis.lattice_points(positions1_2, 0, "r", ax)
+
+            if plot_step:
+                step = int(j/5)
+                plt.title("step: %s "%(step))
 
             outpath = '../../img/visualiser/'
             plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -178,6 +186,10 @@ def update_anim(i,ax):
                 positions2_2[0] = positions2_2[0]-1+(k+1)/frames
                 vis.lattice_points(N-1-positions2_2, 1, "r", ax)
 
+                if plot_step:
+                    step = int(j/5)
+                    plt.title("step: %s "%(step))
+
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
                 j+=1
@@ -194,6 +206,10 @@ def update_anim(i,ax):
             vis.lattice_points(N-1-positions2_2, 1, "r", ax)
             positions2_1[-1] = positions2_1[-1]-(k+1)/frames
             vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+
+            if plot_step:
+                step = int(j/5)
+                plt.title("step: %s "%(step))
 
             outpath = '../../img/visualiser/'
             plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -214,6 +230,10 @@ def update_anim(i,ax):
                     positions1_1[-1] = positions1_1[-1]+(k+1)/frames
                 vis.lattice_points(positions1_1, 0, "b", ax)
 
+                if plot_step:
+                    step = int(j/5)
+                    plt.title("step: %s "%(step))
+
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
                 j+=1
@@ -231,6 +251,10 @@ def update_anim(i,ax):
                 if np.size(positions2_2)>0:
                     positions2_2[-1] = positions2_2[-1]+(k+1)/frames
                 vis.lattice_points(N-1-positions2_2, 1, "r", ax)
+
+                if plot_step:
+                    step = int(j/5)
+                    plt.title("step: %s "%(step))
 
                 outpath = '../../img/visualiser/'
                 plt.savefig(path.join(outpath,"%s-.png"%(j)))
@@ -255,6 +279,10 @@ def update_anim(i,ax):
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
                     vis.lattice_points(positions1_1, 0, "b", ax)
 
+                    if plot_step:
+                        step = int(j/5)
+                        plt.title("step: %s "%(step))
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -276,6 +304,11 @@ def update_anim(i,ax):
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
                         vis.lattice_points(positions1_1[ind], (k+1)/frames, "b", ax)
                     vis.lattice_points(np.delete(positions1_1, ind), 0, "b", ax)
+
+                    if plot_step:
+                        step = int(j/5)
+                        plt.title("step: %s "%(step))
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -300,6 +333,11 @@ def update_anim(i,ax):
                         positions1_2[ind] = positions1_2[ind]-(k+1)/frames
                         vis.lattice_points(positions1_2[ind], (k+1)/frames, "r", ax)
                     vis.lattice_points(np.delete(positions1_2, ind), 0, "r", ax)
+
+                    if plot_step:
+                        step = int(j/5)
+                        plt.title("step: %s "%(step))
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -320,6 +358,10 @@ def update_anim(i,ax):
                         positions1_1[ind] = positions1_1[ind]+(k+1)/frames
                     vis.lattice_points(positions1_2, 0, "b", ax)
 
+                    if plot_step:
+                        step = int(j/5)
+                        plt.title("step: %s "%(step))
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -327,7 +369,7 @@ def update_anim(i,ax):
                 L1[i-1]=2
                 plt.close('all')
     #regular site lattice 2
-    elif i>N:
+    elif i>N and i<2*N+1:
         i = i-N-2
         print(i)
         assert(i>=0)
@@ -348,6 +390,10 @@ def update_anim(i,ax):
                         positions2_2[ind] = positions2_2[ind]+(k+1)/frames
                     vis.lattice_points(N-1-positions2_2, 1, "r", ax)
 
+                    if plot_step:
+                        step = int(j/5)
+                        plt.title("step: %s "%(step))
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -367,6 +413,11 @@ def update_anim(i,ax):
                         positions2_2[ind] = positions2_2[ind]+(k+1)/frames
                         vis.lattice_points(N-1-positions2_2[ind], 1-(k+1)/frames, "r", ax)
                     vis.lattice_points(N-1-np.delete(positions2_2, ind), 1, "r", ax)
+
+                    if plot_step:
+                        step = int(j/5)
+                        plt.title("step: %s "%(step))
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -388,6 +439,11 @@ def update_anim(i,ax):
                         positions2_1[ind] = positions2_1[ind]-(k+1)/frames
                         vis.lattice_points(N-1-positions2_1[ind], 1-(k+1)/frames, "b", ax)
                     vis.lattice_points(N-1-np.delete(positions2_1, ind), 1, "b", ax)
+
+                    if plot_step:
+                        step = int(j/5)
+                        plt.title("step: %s "%(step))
+
                     outpath = '../../img/visualiser/'
                     plt.savefig(path.join(outpath,"%s-.png"%(j)))
                     j+=1
@@ -409,6 +465,11 @@ def update_anim(i,ax):
                             positions2_1[ind] = positions2_1[ind]-(k+1)/frames
                             vis.lattice_points(N-1-positions2_1[ind], 1, "b", ax)
                         vis.lattice_points(np.delete(N-1-positions2_1, ind), 1, "b", ax)
+
+                        if plot_step:
+                            step = int(j/5)
+                            plt.title("step: %s "%(step))
+
                         outpath = '../../img/visualiser/'
                         plt.savefig(path.join(outpath,"%s-.png"%(j)))
                         j+=1
@@ -419,7 +480,7 @@ def plot_init():
 
     fig, ax = plt.subplots()
     ax.set_aspect(aspect=1)
-    vis.lattice_grid(N,1,ax)###
+    vis.lattice_grid(N,2,ax)###
     positions1_1, positions1_2, positions2_2, positions2_1= vis.lattice2positions(L1, L2,ax)
     return positions1_1, positions1_2, positions2_2, positions2_1, ax
 
@@ -755,6 +816,11 @@ while j<steps:#True:#
     vis.lattice_points(positions1_2, 0, "r", ax)
     vis.lattice_points(N-1-positions2_2, 1, "r", ax)#to flip it N-1-positions_vect
     vis.lattice_points(N-1-positions2_1, 1, "b", ax)
+
+    if plot_step:
+        step = int(j/5)
+        plt.title("step: %s "%(step))
+
     plt.close('all')
     #outpath = '../../img/visualiser/'
     #plt.savefig(path.join(outpath,"%s-.png"%(j)))###
