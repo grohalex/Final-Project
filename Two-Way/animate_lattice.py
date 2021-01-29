@@ -12,8 +12,8 @@ from os import path
 
 
 #parameters
-N = 15     # number of sites
-a1 = 1      # injection probability at lattice 1
+N = 20     # number of sites
+a1 = 0      # injection probability at lattice 1
 a2 = 0      # injection probability at lattice 2
 b1 = 1      # removal probability at lattice 1
 b2 = 1      # removal probability at lattice 2
@@ -22,7 +22,7 @@ k12 = 0    # steping probability for particle 1 to lattice 2
 k21 = 0     # steping probability for particle 2 to lattice 1
 k22 = 1     # steping probability for particle 2 in lattice 2
 
-steps = 1000      #steps
+steps = 10      #steps
 steady_state = 20 #10000    #after the transient phase
 
 

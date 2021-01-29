@@ -1,31 +1,34 @@
-# first version of two way lattice for getting current
+# first version of two way lattice stuck position heatmap
 import numpy as np
 import numpy.random as rd
 import random as random
 import scipy
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
+from os import path
 from datetime import datetime
 now = datetime.now()
 
 #parameters
-N = 50     # number of sites
-a1 = 1   # injection probability at lattice 1
-a2 = 0     # injection probability at lattice 2
-b1 = 0.1    # removal probability at lattice 1
-b2 = 0      # removal probability at lattice 2
-k11 = 1     # steping probability for particle 1 in lattice 1
-k12 = 1#0.2    # steping probability for particle 1 to lattice 2
-k21 = 1#0     # steping probability for particle 2 to lattice 1
-k22 = 1#0     # steping probability for particle 2 in lattice 2
+N = 100     # number of sites
+a1 = 1     # injection probability at lattice 1
+a2 = 1     # injection probability at lattice 2
+b1 = 1      # removal probability at lattice 1
+b2 = 1      # removal probability at lattice 2
+k11 = 1    # steping probability for particle 1 in lattice 1
+#k12 = 0.1    # steping probability for particle 1 to lattice 2
+#k21 = 0     # steping probability for particle 2 to lattice 1
+k22 = 0.1     # steping probability for particle 2 in lattice 2
 
-steps = 200000     #steps
-steady_state = 30000 #10000    #after the transient phase
-
+k12_values = [round(i, 2) for i in np.linspace(0,1,11)]#np.linspace(0,1,11)
+k21_values = np.flip(k12_values)#[round(i, 2) for i in np.linspace(0,1,11)]
+stuck_steps_matrix = np.zeros([ len(k21_values), len(k12_values)]) #init our heat maps
+max_step = 600
+averages = 5
 #init
 L1 = np.zeros(N)    #initialize lattice 1
 L2 = np.zeros(N)    #initialize lattice 2
+step = 0            #init step variable
 #init the current measurement variables 'passed_particles'
 passed_particles1 = 0  #particles which passes 0th site in latice 1
 passed_particles2 = 0  #particles which passed 0th site in latice 2
@@ -90,11 +93,16 @@ def update(i):
             if L2[-i]==0 and rd.rand()<k21:
                 L1[i]=0
                 L2[-i]=2
+                if i == int(N/2):           ###
+                    passed_particles1 +=1   ### #adding to the current in the second lattice (super coarse)
+
 
             #continue in the opposite lane
             elif L1[i-1]==0 and rd.rand()<k21:
                 L1[i]=0
                 L1[i-1]=2
+                if i == int(N/2):           ###
+                    passed_particles1 +=1   ### #adding to the current in the second lattice (super coarse)
 
     #regular site lattice 2
     elif i>N and i<2*N+1:
@@ -119,12 +127,18 @@ def update(i):
             if L1[-i]==0 and rd.rand()<k12:
                 L2[i]=0
                 L1[-i]=1
+                if i == int(N/2):           ###
+                    passed_particles2 +=1   ### #adding to the current in the second lattice (super coarse)
+
 
             #continue in the opposite lane
             elif L2[i-1]==0 and rd.rand()<k12:
                 if not i==0:
                     L2[i]=0
                     L2[i-1]=1
+
+                    if i == int(N/2):           ###
+                        passed_particles2 +=1   ### #adding to the current in the second lattice (super coarse)
 
 
 #lets you update the lattice with optional parameters. This is useful in the Stuck_position()
@@ -430,92 +444,50 @@ def stuck_position():
 
 ###########################################################################
 
-#Working simulation:
-'''
-j = 0
-while True:#j<100:
-    print(j)
-    site = int(input("ch: "))#rd.randint(0,2*N+2)
-    #site = rd.randint(0,2*N+2)
-    #print(site)
-    #update(site)
-    print(update_par(site, 1,1,1,1,1,1,1,1))
-    print(stuck_position())
-    DisplayNice()
-    j+=1
-'''
+for i in range(averages):
+    #changing k12:
+    for ii in range(len(k12_values)):
+        k12 = k12_values[ii]
+        print(k12)
+        for jj in range(len(k21_values)):
+            k21 = k21_values[jj]
 
-for i in range(steps):
-    for j in range(2*N+2):
-        site = rd.randint(0,2*N+2)
-        update(site)
+            #I should empty the lattice here
+            L1 = np.zeros(N)    #initialize lattice 1
+            L2 = np.zeros(N)    #initialize lattice 2
+            step = 0            #init step variable
 
-    #cutoff (steady state) period
-    if i == steady_state: #we start measuring from 0
-            passed_particles1 = 0
-            passed_particles2 = 0
+            while not stuck_position() and not step > max_step:
+                #print('yes')
+                step += 1
+                for j in range(2*N+2):
+                    site = rd.randint(0,2*N+2)
+                    update(site)
+            print("step:", step)
+            stuck_steps_matrix[jj,ii] += step/averages
 
-    #update site densities
-    if i>=steady_state:
-        l1 = L1>0           #remove ones and twos -> boolean
-        l1 = l1.astype(int) #make them integers
-        l2 = L2>0           #remove ones and twos -> boolean
-        l2 = l2.astype(int) #make them integers
 
-        for k in range(N):
-            densities1[k] += l1[k]/(steps-steady_state)    #add only a weighted part of the density
-            densities2[k] += l2[k]/(steps-steady_state)    #add only a weighted part of the density
-
-        #DisplayNice()
-
-current1 = passed_particles1/(steps-steady_state)
-current2 = passed_particles2/(steps-steady_state)
-
-print('currents: ')
-print(current1, " ",current2 )
-print(densities1)
-print(densities2)
-
-#saving the density profile into a txt file:
-
-Name = "density_profileN%sa1_%sb1_%sa2_%sb2_%s"%(N,a1,b1,a2,b2)
-heading = "site \t DENSITY l1 \t DENSITY l2"
-sites = np.arange(N)
-data = sites,densities1,densities2
+#save the matrix into a txt
+Name = "stuck_heatmapN%s"%(N)
+heading = "parameters step: %s k12_values: %s \n k21_values %s \n"% (len(k12_values), k12_values, k21_values)
+data = stuck_steps_matrix
 data = np.array(data)
-data = np.transpose(data)
-fmt = "%-10d", "%-10.3f", "%-10.3f"
-np.savetxt(Name, data, fmt = fmt, delimiter = "\t", header = heading)
+#data = np.transpose(data)
+#fmt = "%-10d", "%-10.3f", "%-10.3f"
+np.savetxt(Name, data, fmt = "%-10d", delimiter = "\t", header = heading)
 
 
 
-#plotting the density profiles
-fig, (ax1, ax2) = plt.subplots(2)
-fig.suptitle('Two-way lattice, sites=%s, steps:%s  \n parameters:  a1=%s, b1=%s, a2=%s, b2=%s, \n k11=%s, k12=%s, k22=%s, k21=%s'%(N, steps, a1, b1,a2,b2,k11,k12,k22,k21))
-ax1.plot(range(1,N+1),densities1, linestyle = '-', marker = 'o', color = 'blue', label = 'Lattice 1')
-#ax1.set_ylim([0.5,1])
-ax1.set_xlim([0.65,N+0.9])
-ax1.set_xlabel('site')
-ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax1.set_ylabel('average occupancy')
-props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-ax1.text(0.05, 0.95, "Current = %s"%round(current1,3), transform=ax1.transAxes, fontsize=9,
-        verticalalignment='top', bbox=props)
-for i in range(len(densities1)):
-    ax1.text(i+1-0.2,densities1[i]+0.04,'ρ=%s'%round(densities1[i],3), verticalalignment='top',fontsize=9)
-ax1.legend(loc = 1)
-densities2 = np.flip(densities2)
-ax2.plot(range(1,N+1),densities2, linestyle = '-', marker = 'o', color = 'red', label = 'Lattice 2') #to have the second lattice oriented the same way
-#ax2.set_ylim([0,1])
-ax2.set_xlim([0.5,N+0.9])
-ax2.set_xlabel('site')
-ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax2.set_ylabel('average occupancy')
-ax2.legend(loc = 1)     #loc 0  = best, loc 1 = right top
-#ax2.text(0.05, 0.95, "Current = %s"%round(current2,3), transform=ax2.transAxes, fontsize=9,
-#        verticalalignment='top', bbox=props)
-for i in range(len(densities1)):
-    ax2.text(i+1-0.2,densities2[i]+0.04,'γ=%s'%round(densities2[i],3), verticalalignment='top',fontsize=9)
-t= now.strftime("%H:%M:%S")
-plt.savefig('../../img/two-way/DensityProfile-N%sa1_%sb1_%s-a2_%sb2_%s-%s.png'%(N,a1,b1,a2,b2,t))
+
+#heat map plot:
+f1 = plt.figure()
+plt.xticks(ticks=np.arange(len(k12_values)),labels=k12_values)
+plt.yticks(ticks=np.arange(len(k21_values)),labels=k21_values)
+plt.title("Stuck Lattice heatmap(number of sites = %s, resolution in a = %s, b = %s)"%(N, len(k12_values), len(k21_values)))
+plt.ylabel("k21 value")
+plt.xlabel("k12 value")
+# save this plot inside a variable called hm
+hm=plt.imshow(stuck_steps_matrix, cmap='hot',interpolation="None")
+# pass this heatmap object into plt.colorbar method.
+plt.colorbar(hm)
 plt.show()

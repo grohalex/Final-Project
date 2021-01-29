@@ -13,22 +13,22 @@ from os import path
 
 #parameters
 N = 30     # number of sites
-a1 = 1      # injection probability at lattice 1
+a1 = 0.2      # injection probability at lattice 1
 a2 = 0     # injection probability at lattice 2
-b1 = 1      # removal probability at lattice 1
+b1 = 0.2     # removal probability at lattice 1
 b2 = 1      # removal probability at lattice 2
 k11 = 1     # steping probability for particle 1 in lattice 1
 k12 = 0    # steping probability for particle 1 to lattice 2
 k21 = 0     # steping probability for particle 2 to lattice 1
 k22 = 1     # steping probability for particle 2 in lattice 2
 
-steps = 10000#50000*N#000*N                 #steps
-steady_state = 6000#35000*N# 25*N          #after the transient phase we start the animation
-precomputation = steps-steady_state-500  #when it only records the density prof but does not visualise
+steps = 100*N*N+422000#50000*N#000*N                 #steps
+steady_state = 100*N*N+400000#35000*N# 25*N          #after the transient phase we start the animation
+precomputation = steps-steady_state-1000#20*N*N#steps-steady_state-1000  #when it only records the density prof but does not visualise
 
 
 #animation
-frames = 5  #how many transition images we have
+frames = 2  #how many transition images we have
 j = 0       #init counter
 d_low = 0.0 #density plot bounds
 d_high = 0.9 #density plot bounds

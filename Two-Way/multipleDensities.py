@@ -11,14 +11,14 @@ now = datetime.now()
 
 #parameters
 N = 100     # number of sites
-a1 = 0.1     # injection probability at lattice 1
+a1 = 0.5     # injection probability at lattice 1
 a2 = 0     # injection probability at lattice 2
 b1 = 1      # removal probability at lattice 1
-b2 = 0.9      # removal probability at lattice 2
-k11 = 0.1    # steping probability for particle 1 in lattice 1
-k12 = 0.1    # steping probability for particle 1 to lattice 2
-k21 = 0     # steping probability for particle 2 to lattice 1
-k22 = 0.1     # steping probability for particle 2 in lattice 2
+b2 = 0      # removal probability at lattice 2
+k11 = 1    # steping probability for particle 1 in lattice 1
+k12 = 1    # steping probability for particle 1 to lattice 2
+k21 = 1     # steping probability for particle 2 to lattice 1
+k22 = 1     # steping probability for particle 2 in lattice 2
 
 k12_values = [round(i, 2) for i in np.linspace(0,1,11)]#np.linspace(0,1,11)
 
