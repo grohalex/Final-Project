@@ -1,3 +1,16 @@
+function F = thirty_site(xs)
+% 
+a = 0.4;
+b = 1;
+x = xs(1:30);
+y = [0 xs(31:end)];
+%disp(x)
+%disp(y)
+
+
+%use a python script eqs2txt to generate the equations:
+
+    %Nonlinear Equations for solving in MATLAB 
 %Nonlinear Equations for solving in MATLAB 
 F(1) = a*(1 - x(1)) - x(1)*(1 - x(2)) - x(1)*x(2)*(1 - y(2)); 
 F(2) = x(1)*(1 - x(2)) - x(2)*(1 - x(3)) - x(2)*x(3)*(1 - y(3));
@@ -58,3 +71,4 @@ F(56) =x(26)*x(27)*(1 - y(27)) - y(27)*(1 - x(28)) + y(26)*x(27)*(1 - y(27)) - y
 F(57) =x(27)*x(28)*(1 - y(28)) - y(28)*(1 - x(29)) + y(27)*x(28)*(1 - y(28)) - y(28)*x(29)*(1 - y(29));
 F(58) =x(28)*x(29)*(1 - y(29)) - y(29)*(1 - x(30)) + y(28)*x(29)*(1 - y(29)) - y(29)*x(30)*(1 - y(30));
 F(59) =x(29)*x(30)*(1 - y(30)) - b*y(30) + x(30)*y(29)*(1 - y(30)) ;
+

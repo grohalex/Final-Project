@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 #pars: the only parameter is N (for how many sites we want to produce the equations)
-N = 50
+N = 200
 a = "a"
 b = "b"
 

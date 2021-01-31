@@ -10,17 +10,17 @@ from datetime import datetime
 now = datetime.now()
 
 #parameters
-N = 50     # number of sites
-a1 = 1   # injection probability at lattice 1
+N = 200     # number of sites
+a1 = 0.4   # injection probability at lattice 1
 a2 = 0     # injection probability at lattice 2
-b1 = 0.1    # removal probability at lattice 1
+b1 = 1    # removal probability at lattice 1
 b2 = 0      # removal probability at lattice 2
 k11 = 1     # steping probability for particle 1 in lattice 1
 k12 = 1#0.2    # steping probability for particle 1 to lattice 2
 k21 = 1#0     # steping probability for particle 2 to lattice 1
 k22 = 1#0     # steping probability for particle 2 in lattice 2
 
-steps = 200000     #steps
+steps = 400000     #steps
 steady_state = 30000 #10000    #after the transient phase
 
 #init
