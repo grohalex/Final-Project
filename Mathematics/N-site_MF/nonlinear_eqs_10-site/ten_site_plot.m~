@@ -1,0 +1,18 @@
+function ten_site_plot(sim1, sim2)
+x = fsolve(@ten_site,rand(1,19));   %to solve the equations given by ftion ten_site
+
+xs = x(1:10);           %lattice 1 average occupancies
+ys = [0 x(11:end)];     %lattice 2 average occupancies
+
+%plotting:
+subplot(2,1,1)
+title("Mathematical model vs. Simulation, Lattice 1")
+xlabel("site")
+ylabel("average occupancy")
+plot(xs, "-o")
+hold on
+plot(sim1,"-o")
+legend()
+
+end
+

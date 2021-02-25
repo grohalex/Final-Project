@@ -1,0 +1,13 @@
+Dear Geoff,
+I wanted to ask you about your derivation of possible wavelengths that can exist in a cylinder. First, I cannot help myself but isn’t it arbitrary to choose a cylinder rather than cube or an elliptic disc or any other shape? Second, if the choice of the shape is not arbitrary, still the choice of circumference L, seems even more arbitrary. Is there any specific meaning of L (it appears afterwards in the reciprocal space for instance)?
+
+But that is not my question although I would be interested in knowing more about the reasoning. My question is - why do we require the wave function inside the cylinder to be continuous (or rather stationary). I think it must have something to do with time dependency/independency. To illustrate what I mean, I made an (ugly looking) animation, where the first one bellow should be the kind of continuous function that you allow:
+
+Which displays why I think it is time-independent. The second kind of a function, which you said is not allowed could look like this:
+
+Given that I can imagine this kind of wave to exist, why do we say that it is not physically allowed?
+I hope you can shed some light onto this. Hopefully the animations are working for you. 
+
+Thank you very much,
+Best regards,
+Alexander
