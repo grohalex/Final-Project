@@ -1,2 +1,2 @@
-# Ignore files called '*.png'
+# Ignore files called '*.png' --> I dont want any images in my repo
 *.png
