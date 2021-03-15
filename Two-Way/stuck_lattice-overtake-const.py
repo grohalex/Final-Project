@@ -21,11 +21,11 @@ k11 = 1    # steping probability for particle 1 in lattice 1
 k22 = 1     # steping probability for particle 2 in lattice 2
 overtake_rate = 1 # how the all particles finish overtaking and continue in the opposite lane
 
-k12_values = [round(i, 2) for i in np.linspace(0,1,11)]#np.linspace(0,1,11)
+k12_values = [round(i, 2) for i in np.linspace(0,1,20)]#np.linspace(0,1,11)
 k21_values = np.flip(k12_values)#[round(i, 2) for i in np.linspace(0,1,11)]
 stuck_steps_matrix = np.zeros([ len(k21_values), len(k12_values)]) #init our heat maps
 max_step = 1000
-averages = 4
+averages = 1
 #init
 L1 = np.zeros(N)    #initialize lattice 1
 L2 = np.zeros(N)    #initialize lattice 2
@@ -469,7 +469,7 @@ for i in range(averages):
 
 
 #save the matrix into a txt
-Name = "stuck_heatmapN%s"%(N)
+Name = "aatest-stuck_heatmapN%s"%(N)
 heading = "parameters step: %s k12_values: %s \n k21_values %s \n"% (len(k12_values), k12_values, k21_values)
 data = stuck_steps_matrix
 data = np.array(data)

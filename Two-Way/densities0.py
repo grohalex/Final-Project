@@ -10,18 +10,22 @@ from datetime import datetime
 now = datetime.now()
 
 #parameters
-N = 200     # number of sites
+N = 100     # number of sites
 a1 = 0.4   # injection probability at lattice 1
 a2 = 0     # injection probability at lattice 2
 b1 = 1    # removal probability at lattice 1
 b2 = 0      # removal probability at lattice 2
-k11 = 1     # steping probability for particle 1 in lattice 1
-k12 = 1#0.2    # steping probability for particle 1 to lattice 2
-k21 = 1#0     # steping probability for particle 2 to lattice 1
-k22 = 1#0     # steping probability for particle 2 in lattice 2
+k11_1 = 1     # steping probability for particle 1 in lattice 1
+k12_1 = 1#0.2    # steping probability for particle 1 to lattice 2
+k21_1 = 1#0     # steping probability for particle 1 to lattice 1
+k22_1 = 1#0     # steping probability for particle 1 in lattice 2
+k11_2 = 1     # steping probability for particle 2 in lattice 1
+k12_2 = 1#0.2    # steping probability for particle 2 to lattice 2
+k21_2 = 1#0     # steping probability for particle 2 to lattice 1
+k22_2 = 1#0     # steping probability for particle 2 in lattice 2
 
-steps = 400000     #steps
-steady_state = 30000 #10000    #after the transient phase
+steps = 30000     #steps
+steady_state = 10000 #10000    #after the transient phase
 
 #init
 L1 = np.zeros(N)    #initialize lattice 1
@@ -74,12 +78,12 @@ def update(i):
         #update particle 1
         if L1[i]==1:
             #make a step
-            if L1[i+1]==0 and rd.rand()<k11:
+            if L1[i+1]==0 and rd.rand()<k11_1:
                 L1[i]=0
                 L1[i+1]=1
 
             #overtake
-            elif L1[i+1]>0 and L2[-i-2]==0 and rd.rand()<k12:
+            elif L1[i+1]>0 and L2[-i-2]==0 and rd.rand()<k12_1:
                 L1[i]=0
                 L2[-i-2]=1
 
@@ -87,12 +91,12 @@ def update(i):
         if L1[i]==2:
 
             #finish overtaking
-            if L2[-i]==0 and rd.rand()<k21:
+            if L2[-i]==0 and rd.rand()<k12_2:
                 L1[i]=0
                 L2[-i]=2
 
             #continue in the opposite lane
-            elif L1[i-1]==0 and rd.rand()<k21:
+            elif L1[i-1]==0 and rd.rand()<k11_2:
                 L1[i]=0
                 L1[i-1]=2
 
@@ -104,24 +108,24 @@ def update(i):
         #update particle 2
         if L2[i]==2:
             #make a step
-            if L2[i+1]==0 and rd.rand()<k22:
+            if L2[i+1]==0 and rd.rand()<k22_2:
                 L2[i]=0
                 L2[i+1]=2
 
             #overtake
-            elif L2[i+1]>0 and L1[-i-2]==0 and rd.rand()<k21:
+            elif L2[i+1]>0 and L1[-i-2]==0 and rd.rand()<k21_2:
                 L2[i]=0
                 L1[-i-2]=2
 
         #update particle 1
         if L2[i]==1:
             #finish overtaking
-            if L1[-i]==0 and rd.rand()<k12:
+            if L1[-i]==0 and rd.rand()<k21_1:
                 L2[i]=0
                 L1[-i]=1
 
             #continue in the opposite lane
-            elif L2[i-1]==0 and rd.rand()<k12:
+            elif L2[i-1]==0 and rd.rand()<k22_1:
                 if not i==0:
                     L2[i]=0
                     L2[i-1]=1

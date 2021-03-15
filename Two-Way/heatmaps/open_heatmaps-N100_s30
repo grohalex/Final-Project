@@ -1,0 +1,26 @@
+# Heatmaps of avg density, and avg current
+
+
+density_matrix1
+[[0.    0.   ]
+ [0.09  0.065]]
+
+
+density_matrix2
+[[0.    0.076]
+ [0.032 0.083]]
+
+
+current_matrix1
+[[0.  0. ]
+ [0.6 0.4]]
+
+
+current_matrix2
+[[0.   0.25]
+ [0.   0.2 ]]
+
+
+current_total
+[[0.   0.25]
+ [0.6  0.6 ]]

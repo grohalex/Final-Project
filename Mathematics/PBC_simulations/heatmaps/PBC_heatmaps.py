@@ -1,5 +1,4 @@
-# PBC_currents I measure currents for different total densities (rho_t)
-# periodic boundary conditions (PBC) on the two-way lattice
+# first version of two way lattice for getting current
 import numpy as np
 import numpy.random as rd
 import random as random
@@ -11,79 +10,64 @@ from datetime import datetime
 now = datetime.now()
 
 #parameters
-N = 80     # number of sites
-rho_t = np.linspace(0,2,100) #total fraction of particles in the system -> from 0 (empty) to 2 (both lattices are full)
-K_12 = [0.1, 0.1, 0.1,0.1];
-K_21 = [0.2, 0.4, 0.6, 0.8];
-M=np.zeros(len(rho_t))
-for i in range(len(rho_t)):
-    M[i] = int(rho_t[i]*N) #absolute number of particles in the system (rho_t goes up to 2 because if N=10, max number of particles is 20)
-k11 = 1     # steping probability for particle 1 in lattice 1
-k12 = 0#0.2 # steping probability for particle 1 to lattice 2
-k21 = 0#0   # steping probability for particle 2 to lattice 1
-k22 = 1#0   # steping probability for particle 2 in lattice 2
+N = 100     # number of sites
+rho_t = 1.3 #total fraction of particles in the system -> from 0 (empty) to 2 (both lattices are full)
+M = int(rho_t*N) #absolute number of particles in the system (rho_t goes up to 2 because if N=10, max number of particles is 20)
 
-steps = 15000        #steps
-steady_state = 10000  #after the transient phase
+K12_1 = linspace(0.0,1,10)    # steping probability for particle 1 to lattice 2
+K21_1 = linspace(0.0,1,10)#0     # steping probability for particle 1 to lattice 1
+k11_1 = 1     # steping probability for particle 1 in lattice 1
+k12_1 = 0    # steping probability for particle 1 to lattice 2
+k21_1 = 0#0     # steping probability for particle 1 to lattice 1
+k22_1 = 1#0     # steping probability for particle 1 in lattice 2
+k11_2 = 0     # steping probability for particle 2 in lattice 1
+k12_2 = 0#0.2    # steping probability for particle 2 to lattice 2
+k21_2 = 0#0     # steping probability for particle 2 to lattice 1
+k22_2 = 0#0     # steping probability for particle 2 in lattice 2
+
+steps = 20000           #total steps
+steady_state = 10000    #after the transient phase (we start measuring)
 
 #init
 L1 = np.zeros(N)    #initialize lattice 1
 L2 = np.zeros(N)    #initialize lattice 2
-#init the current measurement variables 'passed_particles'
-passed_particles11 = 0  #particles which passes 0th site latice 1 -> lattice 1
-passed_particles12 = 0  #particles which passed 0th site lattice 1 -> lattice 2
-passed_particles21 = 0  #particles which passed 0th site lattice 2 -> lattice 1
-passed_particles22 = 0  #particles which passed 0th site lattice 2 -> lattice 2
+    #init the current measurement variables 'passed_particles'
+passed_particles1 = 0  #particles which passes 0th site in latice 1
+passed_particles2 = 0  #particles which passed 0th site in latice 2
 current1 = 0
 current2 = 0
-
+avg_density1 = 0    #avg_density in lattice 1
+avg_density2 = 0    #avg_density in lattice 2
 densities1 = np.zeros(N) #average occupation density for each site in lattice 1
 densities2 = np.zeros(N) #average occupation density for each site in lattice 2
-density1 = np.zeros(len(M)) #average occupation across the entire ring 1 for each rho_t
-density2 = np.zeros(len(M)) #average occupation across the entire ring 2 for each rho_t
+density_matrix1 = np.zeros([len(A1),len(A1)])# a heatmap recording the avg densities in lattice 1
+density_matrix2 = np.zeros([len(A1),len(A1)])# a heatmap recording the avg densities in lattice 2
+current_matrix1 = np.zeros([len(A1),len(A1)])# a heatmap recording the avg densities in lattice 1
+current_matrix2 = np.zeros([len(A1),len(A1)])# a heatmap recording the avg densities in lattice 2
+current_total =np.zeros([len(A1),len(A1)])  #total current through the lattice
 #densities_a1 = np.zeros(steps_a) # densities corresponding to different initial a
-
-def init_positions_particles1(n, m):
-    l1 = np.zeros(n)
-    l2 = np.zeros(n)
-    ind = list(range(2*n))
-
-    #print(m)
-    indices = random.sample(ind, m)
-    indices.sort() #this is not really needed
-
-
-    for i in range(len(indices)):
-        if indices[i]<=N-1:
-            l1[indices[i]] = 1;
-        elif indices[i]>N-1:
-            l2[indices[i]-N] = 1;
-
-
-    return l1, l2
-
 
 #update ftion
 def update(i):
     global passed_particles11,passed_particles12, passed_particles21,passed_particles22
     #insertion a1 - no insertion in PBC!
     if i==0:
-        if L1[0]==1 and L1[1]==0 and rd.rand()<k11: #particle1 continues in L1
+        if L1[0]==1 and L1[1]==0 and rd.rand()<k11_1: #particle1 continues in L1
             L1[0]=0
             L1[1]=1
             passed_particles11 +=1
 
-        elif L1[0]==1 and L1[1]>0 and L2[-2]==0 and rd.rand()<k12: #particle1 overtakes
+        elif L1[0]==1 and L1[1]>0 and L2[-2]==0 and rd.rand()<k11_1: #particle1 overtakes
             L1[0]=0
             L2[-2]=1
             passed_particles12 +=1
 
-        elif L1[0]==2 and L2[0]==0 and rd.rand()<k21:     #particle2 goes into lane 2
+        elif L1[0]==2 and L2[0]==0 and rd.rand()<k12_2:     #particle2 goes into lane 2
             L1[0]=0
             L2[0]=2
             #passed_particles21 +=1
 
-        elif L1[0]==2 and L2[0]>0 and L1[-1]==0 and rd.rand()<k21:    #particle2 continues in L1
+        elif L1[0]==2 and L2[0]>0 and L1[-1]==0 and rd.rand()<k11_2:    #particle2 continues in L1
             L1[0]=0
             L1[-1]=2
             #passed_particles21 +=1
@@ -93,23 +77,23 @@ def update(i):
 
     #insertion a2 - no insertion in PBC!!!
     elif i==N:
-        if L2[0]==2 and L2[1]==0 and rd.rand()<k22: #particle2 continues in L2
+        if L2[0]==2 and L2[1]==0 and rd.rand()<k22_2: #particle2 continues in L2
             L2[0]=0
             L2[1]=2
             #passed_particles22 +=1
 
-        elif L2[0]==2 and L2[1]>0 and L1[-2]==0 and rd.rand()<k21: #particle2 overtakes
+        elif L2[0]==2 and L2[1]>0 and L1[-2]==0 and rd.rand()<k21_2: #particle2 overtakes
             L2[0]=0
             L2[-2]=2
             #passed_particles22 +=1
 
-        elif L2[0]==1 and L1[0]==0 and rd.rand()<k21:     #particle1 goes into lane 1
+        elif L2[0]==1 and L1[0]==0 and rd.rand()<k21_1:     #particle1 goes into lane 1
             L2[0]=0
             L1[0]=1
             passed_particles21 +=1
 
 
-        elif L2[0]==1 and L1[0]>0 and L2[-1]==0 and rd.rand()<k22:    #particle1 continues in L2
+        elif L2[0]==1 and L1[0]>0 and L2[-1]==0 and rd.rand()<k22_1:    #particle1 continues in L2
             L2[0]=0
             L2[-1]=1
             passed_particles22 +=1
@@ -120,35 +104,35 @@ def update(i):
 
     #periodic boundaries at L1[end]->L1[0] or L1[end]->L2[0]
     elif i==N-1:
-        if L1[-1]==1 and L1[0]==0 and rd.rand()<k11: #it goes to the beginning again (PCB)
+        if L1[-1]==1 and L1[0]==0 and rd.rand()<k11_1: #it goes to the beginning again (PCB)
             L1[-1]=0
             L1[0]=1
-        if L1[-1]==1 and L1[0]>0 and L2[-1]==0 and rd.rand()<k12:  #it overtakes into the 2nd line (PCB)
+        if L1[-1]==1 and L1[0]>0 and L2[-1]==0 and rd.rand()<k12_1:  #it overtakes into the 2nd line (PCB)
             L1[-1]=0
             L2[-1]=1
-        if L1[-1]==2 and L2[1]==0 and rd.rand()<k21:    #particle 2 come back to lattice 2
+        if L1[-1]==2 and L2[1]==0 and rd.rand()<k12_2:    #particle 2 come back to lattice 2
             L1[-1]=0
             L2[1]=2
-        if L1[-1]==2 and L2[1]>0 and L1[-2]==0 and rd.rand()<k22:    #particle 2 continue in the opposite lane
+        if L1[-1]==2 and L2[1]>0 and L1[-2]==0 and rd.rand()<k11_2:    #particle 2 continue in the opposite lane
             L1[-1]=0
             L1[-2]=2
 
     #periodic boundaries at L2[end]->L2[0] or L2[end]->L1[0]
     elif i==2*N-1:
         #it goes to the beginning again (PCB)
-        if L2[-1]==2 and L2[0]==0 and rd.rand()<k22: #it goes to the beginning again (PCB)
+        if L2[-1]==2 and L2[0]==0 and rd.rand()<k22_2: #it goes to the beginning again (PCB)
             L2[-1]=0
             L2[0]=2
         #it overtakes into the 1st line (PCB)
-        if L2[-1]==2 and L2[0]>0 and L1[0]==0 and rd.rand()<k21:
+        if L2[-1]==2 and L2[0]>0 and L1[0]==0 and rd.rand()<k21_2:
             L2[-1]=0
             L1[0]=2
         #particle 1 comes back to lattice 1
-        if L2[-1]==1 and L1[1]==0 and rd.rand()<k21:
+        if L2[-1]==1 and L1[1]==0 and rd.rand()<k21_1:
             L2[-1]=0
             L1[1]=1
         #particle 1 continue in the opposite lane, lattice 2
-        if L2[-1]==1 and L1[1]>0 and L2[-2]==0 and rd.rand()<k22:
+        if L2[-1]==1 and L1[1]>0 and L2[-2]==0 and rd.rand()<k22_1:
             L2[-1]=0
             L2[-2]=1
 
@@ -158,12 +142,12 @@ def update(i):
         #update particle 1
         if L1[i]==1:
             #make a step
-            if L1[i+1]==0 and rd.rand()<k11:
+            if L1[i+1]==0 and rd.rand()<k11_1:
                 L1[i]=0
                 L1[i+1]=1
 
             #overtake
-            elif L1[i+1]>0 and L2[-i-2]==0 and rd.rand()<k12:
+            elif L1[i+1]>0 and L2[-i-2]==0 and rd.rand()<k12_1:
                 L1[i]=0
                 L2[-i-2]=1
 
@@ -171,12 +155,12 @@ def update(i):
         if L1[i]==2:
 
             #finish overtaking
-            if L2[-i]==0 and rd.rand()<k21:
+            if L2[-i]==0 and rd.rand()<k12_2:
                 L1[i]=0
                 L2[-i]=2
 
             #continue in the opposite lane
-            elif L1[i-1]==0 and rd.rand()<k21:
+            elif L1[i-1]==0 and rd.rand()<k11_2:
                 L1[i]=0
                 L1[i-1]=2
 
@@ -188,27 +172,29 @@ def update(i):
         #update particle 2
         if L2[i]==2:
             #make a step
-            if L2[i+1]==0 and rd.rand()<k22:
+            if L2[i+1]==0 and rd.rand()<k22_2:
                 L2[i]=0
                 L2[i+1]=2
 
             #overtake
-            elif L2[i+1]>0 and L1[-i-2]==0 and rd.rand()<k21:
+            elif L2[i+1]>0 and L1[-i-2]==0 and rd.rand()<k21_2:
                 L2[i]=0
                 L1[-i-2]=2
 
         #update particle 1
         if L2[i]==1:
             #finish overtaking
-            if L1[-i]==0 and rd.rand()<k21:
+            if L1[-i]==0 and rd.rand()<k21_1:
                 L2[i]=0
                 L1[-i]=1
 
             #continue in the opposite lane
-        elif L2[i-1]==0 and rd.rand()<k22:
+            elif L2[i-1]==0 and rd.rand()<k22_1:
                 if not i==0:
                     L2[i]=0
                     L2[i-1]=1
+
+
 
 #lets you update the lattice with optional parameters. This is useful in the Stuck_position()
 def update_par(i, A1, A2, B1, B2, K11, K22, K12, K21):
@@ -505,12 +491,24 @@ def stuck_position():
     if unstuck == 0:
         return True
 
-    #this checks whether the update_par returns None (that would be an error)
-#while True:
-#    site = rd.randint(0,2*N+2)
-#    if update_par(site, 1,1,1,1,1,1,1,1)==None:
-#        print('omg no')
+def init_positions_particles1(n, m):
+    l1 = np.zeros(n)
+    l2 = np.zeros(n)
+    ind = list(range(2*n))
 
+    #print(m)
+    indices = random.sample(ind, m)
+    indices.sort() #this is not really needed
+
+
+    for i in range(len(indices)):
+        if indices[i]<=N-1:
+            l1[indices[i]] = 1;
+        elif indices[i]>N-1:
+            l2[indices[i]-N] = 1;
+
+
+    return l1, l2
 ###########################################################################
 
 #Working simulation:
@@ -527,52 +525,147 @@ while True:#j<100:
     DisplayNice()
     j+=1
 '''
+for step in range(len(K_12)):
+    k12 = K_12[step]
+    k21 = K_21[step]
+    print("k12: ",k12, "\t k21: ", k21)
+
+    C_total = np.zeros(len(M))  #total current
+    C11 = np.zeros(len(M)) #current in l1 -> l1
+    C12 = np.zeros(len(M)) #current in l1 -> l2
+    C21 = np.zeros(len(M)) #current in l2 -> l1
+    C22 = np.zeros(len(M)) #current in l2 -> l2
+    for mm in range(len(M)):
+        #init
+        L1 = np.zeros(N)    #initialize lattice 1
+        L2 = np.zeros(N)    #initialize lattice 2
+        #init the current measurement variables 'passed_particles'
+        passed_particles11 = 0  #particles which passes 0th site latice 1 -> lattice 1
+        passed_particles12 = 0  #particles which passed 0th site lattice 1 -> lattice 2
+        passed_particles21 = 0  #particles which passed 0th site lattice 2 -> lattice 1
+        passed_particles22 = 0  #particles which passed 0th site lattice 2 -> lattice 2
+        current11 = 0
+        current12 = 0
+        current21 = 0
+        current22 = 0
+
+        L1, L2 = init_positions_particles1(N,int(M[mm]))
+
+        for i in range(steps):
+            for j in range(2*N):
+                site = rd.randint(0,2*N)
+                update(site)
+            #cutoff (steady state) period
+            if i == steady_state: #we start measuring from 0
+                    passed_particles11 = 0
+                    passed_particles12 = 0
+                    passed_particles21 = 0
+                    passed_particles22 = 0
+
+
+        current11 = passed_particles11/(steps-steady_state)
+        current12 = passed_particles12/(steps-steady_state)
+        current21 = passed_particles21/(steps-steady_state)
+        current22 = passed_particles22/(steps-steady_state)
+        current = current11+current12+current21+current22
+
+        '''
+        print('C_total:', current)
+        print('C11:', current11)
+        print('C12:', current12)
+        print('C21', current21)
+        print('C22', current22)
+        '''
+        C_total[m,n] = current
+        C11[m,n] = current11
+        C12[m,n] = current12
+        C21[m,n] = current21
+        C22[m,n] = current22
+
+#init matrices
+C_total = np.zeros([len(K12_1),len(K21_1)])  #total current
+C11 = np.zeros([len(K12_1),len(K21_1)]) #current in l1 -> l1
+C12 = np.zeros([len(K12_1),len(K21_1)]) #current in l1 -> l2
+C21 = np.zeros([len(K12_1),len(K21_1)]) #current in l2 -> l1
+C22 = np.zeros([len(K12_1),len(K21_1)]) #current in l2 -> l2
+
+for m in range(len(K12_1)):
+    print(m*'>',(len(K12_1)-m)*'-')
+
+    for n in range(len(K21_1)):
+        k12_1 = K12_1[m]      #setting the value of k12
+        k21_1 = K21_1[n]      #setting the value of k21
+        #initialize each outer loop
+        L1, L2 = init_positions_particles1(N,int(M))
+        #init
+            #init the current measurement variables 'passed_particles'
+        passed_particles11 = 0  #particles which passes 0th site latice 1 -> lattice 1
+        passed_particles12 = 0  #particles which passed 0th site lattice 1 -> lattice 2
+        passed_particles21 = 0  #particles which passed 0th site lattice 2 -> lattice 1
+        passed_particles22 = 0  #particles which passed 0th site lattice 2 -> lattice 2
+        current11 = 0
+        current12 = 0
+        current21 = 0
+        current22 = 0
+        current = 0
+
+
+        for i in range(steps):
+            for j in range(2*N+2):
+                site = rd.randint(0,2*N+2)
+                update(site)
+
+            #cutoff (steady state) period
+            if i == steady_state: #we start measuring from 0
+                passed_particles11 = 0
+                passed_particles12 = 0
+                passed_particles21 = 0
+                passed_particles22 = 0
+
+        current11 = passed_particles11/(steps-steady_state)
+        current12 = passed_particles12/(steps-steady_state)
+        current21 = passed_particles21/(steps-steady_state)
+        current22 = passed_particles22/(steps-steady_state)
+        current = current11+current12+current21+current22
+
+        C11[m,n] = current11
+        C12[m,n] = current12
+        C21[m,n] = current21
+        C22[m,n] = current22
+        C_total[m,n] = current
+
+#saving the heatmaps into a txt file:
+    #first rounding the matrices:
+C11 = np.round(C11,3)
+C12 = np.round(C12,3)
+C21 = np.round(C21,3)
+C22 = np.round(C22,3)
+C_total = np.round(C_total,3)
+
+Name = "PBC_heatmaps-N%s_s%s"%(N, steps)
+heading = "sites: N%s, total steps: %s, steady_state: %s, rho_t: %rho_t\n ,k11_1 = %s, k12_1 = %s, k21_1 = %s, k22_1 =%s,"%(N, steps, steady_state, k11_1,K12_1, K21_1, k22_1)#" \t  \t "
+rhos_t = str([round(i, 4) for i in rho_t])
+rhos = str([round(i, 4) for i in density1])
+gammas = str([round(i, 4) for i in density2])
+heading = "Heatmaps of avg density, and avg current"
+data = "\n","C11 matrix",C11,"\n","C12 matrix", C12,"\n","C21 matrix", C21,"\n","C22_matrix", C22,"\n", "C_total matrix", C_total
+#data = np.array(data)
+#data = np.transpose(data)
+#fmt =  "%s", "%-10.4f","%s" ,"%-10.4f","%s","%-10.4f","%s", "%-10.4f","%s","%-10.4f"
+np.savetxt(Name, data, fmt = '%-s', header = heading)
 
 '''
-for i in range(steps):
-    for j in range(2*N+2):
-        site = rd.randint(0,2*N+2)
-        update(site)
-
-    #cutoff (steady state) period
-    if i == steady_state: #we start measuring from 0
-            passed_particles1 = 0
-            passed_particles2 = 0
-
-    #update site densities
-    if i>=steady_state:
-        l1 = L1>0           #remove ones and twos -> boolean
-        l1 = l1.astype(int) #make them integers
-        l2 = L2>0           #remove ones and twos -> boolean
-        l2 = l2.astype(int) #make them integers
-
-        for k in range(N):
-            densities1[k] += l1[k]/(steps-steady_state)    #add only a weighted part of the density
-            densities2[k] += l2[k]/(steps-steady_state)    #add only a weighted part of the density
-
-        #DisplayNice()
-
-current1 = passed_particles1/(steps-steady_state)
-current2 = passed_particles2/(steps-steady_state)
-
-print('currents: ')
-print(current1, " ",current2 )
-print(densities1)
-print(densities2)
-
-#saving the density profile into a txt file:
-
-Name = "density_profileN%sa1_%sb1_%sa2_%sb2_%s"%(N,a1,b1,a2,b2)
-heading = "site \t DENSITY l1 \t DENSITY l2"
-sites = np.arange(N)
-data = sites,densities1,densities2
+#save the matrix into a txt
+Name = "stuck_heatmapN%s_moreAverages"%(N)
+heading = "parameters step: %s k12_values: %s \n k21_values %s \n"% (len(k12_values), k12_values, k21_values)
+data = stuck_steps_matrix, "densities 1:", densities1,"densities2:",densities2
 data = np.array(data)
-data = np.transpose(data)
-fmt = "%-10d", "%-10.3f", "%-10.3f"
-np.savetxt(Name, data, fmt = fmt, delimiter = "\t", header = heading)
+#data = np.transpose(data)
+#fmt = "%-10d", "%-10.3f", "%-10.3f"
+np.savetxt(Name, data, fmt = "%-10d", delimiter = "\t", header = heading)
+'''
 
-
-
+'''
 #plotting the density profiles
 fig, (ax1, ax2) = plt.subplots(2)
 fig.suptitle('Two-way lattice, sites=%s, steps:%s  \n parameters:  a1=%s, b1=%s, a2=%s, b2=%s, \n k11=%s, k12=%s, k22=%s, k21=%s'%(N, steps, a1, b1,a2,b2,k11,k12,k22,k21))
@@ -603,134 +696,4 @@ for i in range(len(densities1)):
 t= now.strftime("%H:%M:%S")
 plt.savefig('../../img/two-way/DensityProfile-N%sa1_%sb1_%s-a2_%sb2_%s-%s.png'%(N,a1,b1,a2,b2,t))
 plt.show()
-
-'''
-
-#L1, L2 = init_positions_particles1(N,M)
-#DisplayNice()
-#print('--------------start----------------')
-for step in range(len(K_12)):
-    k12 = K_12[step]
-    k21 = K_21[step]
-    print("k12: ",k12, "\t k21: ", k21)
-
-    C_total = np.zeros(len(M))  #total current
-    C11 = np.zeros(len(M)) #current in l1 -> l1
-    C12 = np.zeros(len(M)) #current in l1 -> l2
-    C21 = np.zeros(len(M)) #current in l2 -> l1
-    C22 = np.zeros(len(M)) #current in l2 -> l2
-    for mm in range(len(M)):
-        #init
-        L1 = np.zeros(N)    #initialize lattice 1
-        L2 = np.zeros(N)    #initialize lattice 2
-        #init the current measurement variables 'passed_particles'
-        passed_particles11 = 0  #particles which passes 0th site latice 1 -> lattice 1
-        passed_particles12 = 0  #particles which passed 0th site lattice 1 -> lattice 2
-        passed_particles21 = 0  #particles which passed 0th site lattice 2 -> lattice 1
-        passed_particles22 = 0  #particles which passed 0th site lattice 2 -> lattice 2
-        current11 = 0
-        current12 = 0
-        current21 = 0
-        current22 = 0
-        densities1 = np.zeros(N) #average occupation density for each site in lattice 1
-        densities2 = np.zeros(N) #average occupation density for each site in lattice 2
-
-        L1, L2 = init_positions_particles1(N,int(M[mm]))
-
-        for i in range(steps):
-            for j in range(2*N):
-                site = rd.randint(0,2*N)
-                update(site)
-
-            #cutoff (steady state) period
-            if i == steady_state: #we start measuring from 0
-                    passed_particles11 = 0
-                    passed_particles12 = 0
-                    passed_particles21 = 0
-                    passed_particles22 = 0
-
-            #update site densities
-            if i>=steady_state:
-                l1 = L1>0           #remove ones and twos -> boolean
-                l1 = l1.astype(int) #make them integers
-                l2 = L2>0           #remove ones and twos -> boolean
-                l2 = l2.astype(int) #make them integers
-
-                for k in range(N):
-                    densities1[k] += l1[k]/(steps-steady_state)    #add only a weighted part of the density
-                    densities2[k] += l2[k]/(steps-steady_state)    #add only a weighted part of the density
-
-        current11 = passed_particles11/(steps-steady_state)
-        current12 = passed_particles12/(steps-steady_state)
-        current21 = passed_particles21/(steps-steady_state)
-        current22 = passed_particles22/(steps-steady_state)
-        current = current11+current12+current21+current22
-
-        '''
-        print('C_total:', current)
-        print('C11:', current11)
-        print('C12:', current12)
-        print('C21', current21)
-        print('C22', current22)
-        '''
-        C_total[mm] = current
-        C11[mm] = current11
-        C12[mm] = current12
-        C21[mm] = current21
-        C22[mm] = current22
-
-        density1[mm] = np.sum(densities1)/N
-        density2[mm] = np.sum(densities2)/N
-
-
-
-    #plotting
-    '''
-    fig, ax1 = plt.subplots()
-    fig.suptitle('Total current in two-way lattice , sites=%s and steps=%s \n parameters: k11=%s, k12=%s, k21=%s, k22=%s'%(N, steps,k11,k12,k21,k22))
-    ax1.plot(rho_t, C_total, linestyle = '-', color = 'blue', label = 'Current')
-    ax1.set_ylim([0,1.0])
-    ax1.set_xlabel('rho_t')
-    ax1.set_ylabel('total current')
-
-    plt.show()
-    '''
-
-    #saving the currents profiles into a txt file:
-    Name = "multiplePBC_current_N%sSteps%s(%s)"%(N, len(rho_t), step)
-    heading = "sites: N%s, total steps: %s, steady_state: %s,\n k12 = %s, k21 = %s,"%(N, steps, steady_state, k12, k21)#" \t  \t "
-    rhos_t = str([round(i, 4) for i in rho_t])
-    rhos = str([round(i, 4) for i in density1])
-    gammas = str([round(i, 4) for i in density2])
-    C_totals = str([round(i, 4) for i in C_total])
-    C11s = str([round(i, 4) for i in C11])
-    C12s = str([round(i, 4) for i in C12])
-    C21s = str([round(i, 4) for i in C21])
-    C22s = str([round(i, 4) for i in C22])
-    data = "rho_t",rhos_t,"\nrhos", rhos,"\ngammas",gammas ,"\nC_total",C_total, "\nC11",C11s,"\nC12",C12s,"\nC21",C21s,"\nC22",C22s,  #"rho_t \n",rho_t,"J11 \n",C11
-    #data = np.array(data)
-    #data = np.transpose(data)
-    #fmt = "%-10.3f", "%-10.3f", "%-10.3f"
-    #np.savetxt(Name, data, fmt = "%-10.3f", delimiter = "\t", header = heading)
-    np.savetxt(Name, data, fmt = "%s", header = heading)
-
-
-
-
-#debugging - test that it PBC and currents are working:
-'''
-ii = 0
-while 1:#k in range(12):
-
-    inp = int(input("cell to update: "))
-    update(inp)
-    DisplayNice()
-    print('\n')
-    ii +=1
-    if ii == 10:
-        ii = 0
-        #print("p11",passed_particles11)
-        #print("p12",passed_particles12)
-        #print("p21",passed_particles21)
-        #print("p22",passed_particles22)
 '''
