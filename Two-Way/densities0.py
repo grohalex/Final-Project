@@ -10,10 +10,10 @@ from datetime import datetime
 now = datetime.now()
 
 #parameters
-N = 100     # number of sites
-a1 = 0.4   # injection probability at lattice 1
+N = 10     # number of sites
+a1 = 1   # injection probability at lattice 1
 a2 = 0     # injection probability at lattice 2
-b1 = 1    # removal probability at lattice 1
+b1 = 0.1    # removal probability at lattice 1
 b2 = 0      # removal probability at lattice 2
 k11_1 = 1     # steping probability for particle 1 in lattice 1
 k12_1 = 1#0.2    # steping probability for particle 1 to lattice 2
@@ -24,8 +24,8 @@ k12_2 = 1#0.2    # steping probability for particle 2 to lattice 2
 k21_2 = 1#0     # steping probability for particle 2 to lattice 1
 k22_2 = 1#0     # steping probability for particle 2 in lattice 2
 
-steps = 30000     #steps
-steady_state = 10000 #10000    #after the transient phase
+steps = 50000     #steps
+steady_state = 15000 #10000    #after the transient phase
 
 #init
 L1 = np.zeros(N)    #initialize lattice 1
@@ -495,7 +495,7 @@ np.savetxt(Name, data, fmt = fmt, delimiter = "\t", header = heading)
 
 #plotting the density profiles
 fig, (ax1, ax2) = plt.subplots(2)
-fig.suptitle('Two-way lattice, sites=%s, steps:%s  \n parameters:  a1=%s, b1=%s, a2=%s, b2=%s, \n k11=%s, k12=%s, k22=%s, k21=%s'%(N, steps, a1, b1,a2,b2,k11,k12,k22,k21))
+fig.suptitle('Two-way lattice, sites=%s, steps:%s  \n parameters:  a1=%s, b1=%s, a2=%s, b2=%s, \n k11=%s, k12=%s, k22=%s, k21=%s'%(N, steps, a1, b1,a2,b2,k11_1,k12_1,k22_1,k21_1))
 ax1.plot(range(1,N+1),densities1, linestyle = '-', marker = 'o', color = 'blue', label = 'Lattice 1')
 #ax1.set_ylim([0.5,1])
 ax1.set_xlim([0.65,N+0.9])

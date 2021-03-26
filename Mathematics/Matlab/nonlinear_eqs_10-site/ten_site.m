@@ -1,7 +1,7 @@
 function F = ten_site(xs)
 % 
-a = 0.4;
-b = 1;
+a = 0.1;
+b = 0.9;
 x = xs(1:10);
 y = [0 xs(11:end)];
 disp(x)

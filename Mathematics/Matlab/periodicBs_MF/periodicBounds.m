@@ -42,6 +42,61 @@ l.FontSize = 15;
 t.FontSize = 17;
 lx.FontSize = 15;
 ly.FontSize = 15;
+%% plot different k12 and k21
+
+
+
+xs_1 = [0:0.001:1]; %rhos, lattice 1 densities
+ys_1 = xs_1.*xs_1./(xs_1.*xs_1-xs_1+1);%gammas, lattice 2 densities derived for the periodic bound. case
+
+ys_2 = xs_1.*xs_1./(xs_1.*xs_1+100*(-xs_1+1)); %gammas k12/k21 = 0.01
+ys_3 = xs_1.*xs_1./(xs_1.*xs_1+10*(-xs_1+1)); %gammas k12/k21 = 0.1
+ys_4 = xs_1.*xs_1./(xs_1.*xs_1+2*(-xs_1+1)); %gammas k12/k21 = 0.5
+ys_5 = xs_1.*xs_1./(xs_1.*xs_1+(1/1.5)*(-xs_1+1)); %gammas k12/k21 = 1.5
+ys_6 = xs_1.*xs_1./(xs_1.*xs_1+(0.25)*(-xs_1+1)); %gammas k12/k21 = 4
+ys_7 = xs_1.*xs_1./(xs_1.*xs_1+(1/100)*(-xs_1+1)); %gammas k12/k21 = 100
+xs_ident = [0:0.1:1];
+ys_ident = [0:0.1:1];
+
+plot(xs_ident,ys_ident, ":", "LineWidth", 1.0)
+    a0 = annotation('textbox',[0.42, 0.17, 0.3, 0.3],'String',"x=y",'FitBoxToText','on', 'EdgeColor', 'None');
+hold on
+plot(xs_1,ys_1, "-", "LineWidth", 3.0)
+    a1 = annotation('textbox',[0.52, 0.1, 0.3, 0.3],'String',"μ=1",'FitBoxToText','on', 'EdgeColor', 'None');
+plot(xs_1,ys_2, "-", "LineWidth", 1.0)
+    a2 = annotation('textbox',[0.62, 0.1, 0.3, 0.3],'String',"μ=0.5",'FitBoxToText','on', 'EdgeColor', 'None');
+plot(xs_1,ys_3, "-", "LineWidth", 1.0)
+    a3 = annotation('textbox',[0.72, 0.1, 0.3, 0.3],'String',"μ=0.1",'FitBoxToText','on', 'EdgeColor', 'None');
+plot(xs_1,ys_4, "-", "LineWidth", 1.0)
+    a4 = annotation('textbox',[0.815, 0.1, 0.3, 0.3],'String',"μ=0.01",'FitBoxToText','on', 'EdgeColor', 'None');
+plot(xs_1,ys_5, "-", "LineWidth", 1.0)
+    a5 = annotation('textbox',[0.4031, 0.1, 0.3, 0.3],'String',"μ=1.5",'FitBoxToText','on', 'EdgeColor', 'None');
+plot(xs_1,ys_6, "-", "LineWidth", 1.0)
+    a6 = annotation('textbox',[0.31, 0.1, 0.3, 0.3],'String',"μ=4",'FitBoxToText','on', 'EdgeColor', 'None');
+plot(xs_1,ys_7, "-", "LineWidth", 1.0)
+    a7 = annotation('textbox',[0.179, 0.1, 0.3, 0.3],'String',"μ=100",'FitBoxToText','on', 'EdgeColor', 'None');
+
+a0.FontSize = 10;
+a1.FontSize = 12;
+a2.FontSize = 12;
+a3.FontSize = 12;
+a4.FontSize = 12;
+a5.FontSize = 12;
+a6.FontSize = 12;
+a7.FontSize = 12;
+
+%hold on
+%plot(sim1,"-")
+
+%title(strcat("",num2str(a),",b=",num2str(b)))
+%l = legend("y = x", "Relation γ(ρ) = ρ^2/(ρ^2-ρ+1) ", "Location",'northwest');
+t = title({"The relation between lattice 1 and lattice 2 avg. occupancies", "(with periodic boundary conditions)"});
+lx = xlabel("ρ, lattice 1 occupancy ");
+ly = ylabel("γ, lattice 2 occupancy ");
+%l.FontSize = 11; 
+t.FontSize = 17;
+lx.FontSize = 15;
+ly.FontSize = 15;
 
 %% plot two
 
@@ -1011,3 +1066,32 @@ ly.FontSize = 15;
 set(fig,'position',[10,10,850,700])
 saveas(fig,strcat("Jtot_k",num2str(k12),num2str(k21),".png"))
 
+
+%% plot 23 - comparison rho vs gamma simulation and model for variable k12 and k21, added result of the simulation k12=1, k12=1
+k12 = 0.2;
+k21 = 0.2;
+xs = linspace(0,1,100);
+ys = k12*xs.*xs./(k12*xs.*xs-k21*xs+k21);%gammas, lattice 2 densities derived for the periodic bound. case
+%gammas, lattice 2 densities derived for the periodic bound. case
+xs1_sim = [0.0, 0.0199, 0.0388, 0.0571, 0.075, 0.0916, 0.1088, 0.1246, 0.14, 0.1556, 0.1702, 0.1843, 0.1985, 0.2126, 0.2263, 0.2394, 0.2514, 0.2644, 0.2766, 0.288, 0.3005, 0.312, 0.323, 0.3349, 0.3454, 0.3571, 0.3672, 0.3782, 0.388, 0.3982, 0.4084, 0.4188, 0.428, 0.4384, 0.4482, 0.4567, 0.467, 0.4767, 0.4857, 0.4947, 0.5041, 0.513, 0.5211, 0.53, 0.5382, 0.5474, 0.5566, 0.5649, 0.5734, 0.5814, 0.5942, 0.6031, 0.6111, 0.6189, 0.6276, 0.6358, 0.6435, 0.6514, 0.6597, 0.6678, 0.6758, 0.6836, 0.6915, 0.6992, 0.707, 0.7147, 0.7229, 0.731, 0.7392, 0.7462, 0.7542, 0.7622, 0.7696, 0.7777, 0.7852, 0.7929, 0.8008, 0.8091, 0.8165, 0.8247, 0.8319, 0.8402, 0.8477, 0.8564, 0.8642, 0.8721, 0.8803, 0.8889, 0.8969, 0.9051, 0.9136, 0.922, 0.9304, 0.9393, 0.948, 0.9572, 0.9663, 0.9757, 0.9852, 1.0];
+ys1_sim = [0.0, 0.0001, 0.0012, 0.0029, 0.005, 0.0084, 0.0112, 0.0154, 0.02, 0.0244, 0.0298, 0.0357, 0.0415, 0.0474, 0.0537, 0.0606, 0.0686, 0.0756, 0.0834, 0.092, 0.0995, 0.108, 0.117, 0.1251, 0.1346, 0.1429, 0.1528, 0.1618, 0.172, 0.1818, 0.1916, 0.2012, 0.212, 0.2216, 0.2318, 0.2433, 0.253, 0.2633, 0.2743, 0.2853, 0.2959, 0.307, 0.3189, 0.33, 0.3418, 0.3526, 0.3634, 0.3751, 0.3866, 0.3986, 0.4158, 0.4269, 0.4389, 0.4511, 0.4624, 0.4742, 0.4865, 0.4986, 0.5103, 0.5222, 0.5342, 0.5464, 0.5585, 0.5708, 0.583, 0.5953, 0.6071, 0.619, 0.6308, 0.6438, 0.6558, 0.6678, 0.6804, 0.6923, 0.7048, 0.7171, 0.7292, 0.7409, 0.7535, 0.7653, 0.7781, 0.7898, 0.8023, 0.8136, 0.8258, 0.8379, 0.8497, 0.8611, 0.8731, 0.8849, 0.8964, 0.908, 0.9196, 0.9307, 0.942, 0.9528, 0.9637, 0.9743, 0.9848, 1.0];
+
+xs_sim = [0.0, 0.0125, 0.0368, 0.0486, 0.0718, 0.0933, 0.1047, 0.1247, 0.1348, 0.1533, 0.1723, 0.1797, 0.1983, 0.2153, 0.2223, 0.2396, 0.2451, 0.2613, 0.2764, 0.2826, 0.2986, 0.3055, 0.3199, 0.3328, 0.3384, 0.3498, 0.3668, 0.3705, 0.3815, 0.3899, 0.4006, 0.4131, 0.4177, 0.4295, 0.4346, 0.4491, 0.46, 0.4643, 0.4748, 0.4842, 0.4931, 0.5022, 0.508, 0.5193, 0.5294, 0.5358, 0.543, 0.5524, 0.5611, 0.5711, 0.5762, 0.5865, 0.5973, 0.6014, 0.613, 0.6166, 0.6263, 0.6381, 0.6416, 0.6496, 0.6589, 0.6681, 0.6762, 0.6837, 0.6929, 0.7033, 0.7061, 0.7173, 0.7232, 0.7322, 0.7434, 0.747, 0.7584, 0.763, 0.7738, 0.7837, 0.7893, 0.7985, 0.8067, 0.8139, 0.8232, 0.8274, 0.8386, 0.8508, 0.8553, 0.8664, 0.8695, 0.882, 0.895, 0.8994, 0.9097, 0.9223, 0.9273, 0.9387, 0.946, 0.9574, 0.9702, 0.9748, 0.9879, 1.0];
+ys_sim = [0.0, 0.0, 0.0007, 0.0014, 0.0032, 0.0067, 0.0078, 0.0128, 0.0152, 0.0217, 0.0277, 0.0328, 0.0392, 0.0472, 0.0527, 0.0604, 0.0674, 0.0762, 0.0861, 0.0924, 0.1014, 0.107, 0.1176, 0.1297, 0.1366, 0.1502, 0.1582, 0.167, 0.181, 0.1851, 0.1994, 0.2119, 0.2198, 0.233, 0.2404, 0.2509, 0.265, 0.2732, 0.2877, 0.3033, 0.3069, 0.3228, 0.3295, 0.3432, 0.3581, 0.3642, 0.382, 0.3851, 0.4014, 0.4164, 0.4238, 0.4385, 0.4527, 0.4611, 0.4745, 0.4834, 0.4987, 0.5119, 0.5209, 0.5379, 0.5411, 0.5569, 0.5738, 0.5788, 0.5946, 0.6092, 0.6189, 0.6327, 0.6393, 0.6553, 0.6691, 0.678, 0.6916, 0.6995, 0.7137, 0.7288, 0.7357, 0.7515, 0.7683, 0.7736, 0.7893, 0.7976, 0.8114, 0.8242, 0.8322, 0.8461, 0.8555, 0.868, 0.88, 0.8881, 0.9028, 0.9152, 0.9227, 0.9363, 0.9415, 0.9551, 0.9673, 0.9752, 0.9871, 1.0];
+plot(xs,ys, "-", "LineWidth", 1,'Color', 'b'); hold on;
+plot(xs1_sim,ys1_sim, ":.", "LineWidth", 1);
+plot(xs_sim, ys_sim, ":.", "LineWidth", 1, 'MarkerSize', 12)
+%plot(xs_sim2, ys_sim2, ":.", "LineWidth", 2, 'MarkerSize', 12)
+%hold on
+%plot(sim1,"-")
+l = legend("Relation γ(ρ) = k_{12}ρ^2/(k_{12}ρ^2 + k_{21}(1 -ρ)) ", "Simulation values for k_{12}=k_{21}=1","Simulation values for k_{12}=k_{21}=0.2", "Location",'northwest');
+%title(strcat("",num2str(a),",b=",num2str(b)))
+%t = title({"Ring Simulation vs. M-F prediction:","The relation between lattice 1 and lattice 2 avg. occupancies", [ 'k_{12}= ',num2str(k12),', k_{21}= ', num2str(k21)]});
+t = title({"Ring Simulation vs. M-F prediction:","The relation between lattice 1 and lattice 2 avg. occupancies"});
+
+lx = xlabel("ρ, lattice 1 occupancy ");
+ly = ylabel("γ, lattice 2 occupancy ");
+l.FontSize = 15; 
+t.FontSize = 17;
+lx.FontSize = 15;
+ly.FontSize = 15;

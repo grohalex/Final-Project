@@ -56,19 +56,19 @@ C_tot = [[0.    0.097 0.173 0.224 0.246 0.252 0.253 0.253 0.253 0.253]
  [0.458 0.285 0.289 0.289 0.292 0.287 0.288 0.29  0.291 0.293]];
 %% heatmap 1 - D1
 
-xvalues =  [0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ];
-yvalues =  flip([0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ]);
-h = heatmap(xvalues, yvalues,flip(D1), 'Colormap', hot, 'ColorLimits',[0 0.7], 'GridVisible', 'off', 'CellLabelColor','none');
-h.Title = {"Density Heatmap of open lattice 1, D_1(α_1, α_2)", "β_1=0.6 β_2=0.6, k_{11}^1 = k_{12}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
+xvalues =  round([0.         0.05263158 0.10526316 0.15789474 0.21052632 0.26315789 0.31578947 0.36842105 0.42105263 0.47368421 0.52631579 0.57894737 0.63157895 0.68421053 0.73684211 0.78947368 0.84210526 0.89473684 0.94736842 1.        ],3);
+yvalues =  flip(round([0.         0.05263158 0.10526316 0.15789474 0.21052632 0.26315789 0.31578947 0.36842105 0.42105263 0.47368421 0.52631579 0.57894737 0.63157895 0.68421053 0.73684211 0.78947368 0.84210526 0.89473684 0.94736842 1.        ],3));
+h = heatmap(xvalues, yvalues,flip(D1), 'Colormap', hot, 'ColorLimits',[0 max(D1(:))], 'GridVisible', 'off', 'CellLabelColor','none');
+h.Title = {"Density Heatmap of open lattice 1, D_1(α_1, α_2)", "β_1=1, β_2=1, k_{11}^1 = k_{12}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
 h.xlabel('α_{2}');
 h.ylabel('α_{1}');
 
 
 %% heatmap D2
-xvalues =  [0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ];
-yvalues =  flip([0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ]);
-h = heatmap(xvalues, yvalues,flip(D2), 'Colormap', hot, 'ColorLimits',[0 0.95], 'GridVisible', 'off', 'CellLabelColor','none');
-h.Title = {"Density Heatmap of open lattice 2, D_2(α_1, α_2)", "β_1=0.6 β_2=0.6, k_{11}^1 = k_{12}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
+xvalues =  round([0.         0.05263158 0.10526316 0.15789474 0.21052632 0.26315789 0.31578947 0.36842105 0.42105263 0.47368421 0.52631579 0.57894737 0.63157895 0.68421053 0.73684211 0.78947368 0.84210526 0.89473684 0.94736842 1.        ],3);
+yvalues =  flip(round([0.         0.05263158 0.10526316 0.15789474 0.21052632 0.26315789 0.31578947 0.36842105 0.42105263 0.47368421 0.52631579 0.57894737 0.63157895 0.68421053 0.73684211 0.78947368 0.84210526 0.89473684 0.94736842 1.        ],3));
+h = heatmap(xvalues, yvalues,flip(D2), 'Colormap', hot, 'ColorLimits',[0 max(D2(:))], 'GridVisible', 'off', 'CellLabelColor','none');
+h.Title = {"Density Heatmap of open lattice 2, D_2(α_1, α_2)", "β_1=1, β_2=1, k_{11}^1 = k_{12}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
 h.xlabel('α_{2}');
 h.ylabel('α_{1}');
 
@@ -80,19 +80,26 @@ h.Title = {"Current Heatmap of open lattice 1, C_1(α_1, α_2)", "β_1=0.6 β_2=
 h.xlabel('α_{2}');
 h.ylabel('α_{1}');
 %% heatmap C2
-xvalues =  [0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ];
-yvalues =  flip([0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ]);
-h = heatmap(xvalues, yvalues,flip(C2), 'Colormap', hot, 'ColorLimits',[0 0.256], 'GridVisible', 'off', 'CellLabelColor','none');
-h.Title = {"Current Heatmap of open lattice 2, C_2(α_1, α_2)", "β_1=0.6 β_2=0.6, k_{11}^1 = k_{12}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
-h.xlabel('α_{2}');
+xvalues =  [0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ];
+yvalues =  flip([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ]);
+h = heatmap(xvalues, yvalues,flip(C2), 'Colormap', hot, 'ColorLimits',[0 0.170], 'GridVisible', 'off', 'CellLabelColor','none');
+h.Title = {"Current Heatmap of open lattice 2, C_2(α_1, k_{12}^1)", "β_1=1, α_{2} = 0.2, β_2=0.9, k_{11}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
+h.xlabel('k_{12}');
 h.ylabel('α_{1}');
 %% heatmap C_tot
 xvalues =  [0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ];
 yvalues =  flip([0.   , 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.   ]);
-h = heatmap(xvalues, yvalues,flip(C_tot), 'Colormap', hot, 'ColorLimits',[0 0.47], 'GridVisible', 'off', 'CellLabelColor','none');
-h.Title = {"Total Current Heatmap of open lattice, C_{tot}(α_1, α_2)", "β_1=0.6 β_2=0.6, k_{11}^1 = k_{12}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
+h = heatmap(xvalues, yvalues,flip(C_tot), 'Colormap', hot, 'ColorLimits',[0 max(D2(:))], 'GridVisible', 'off', 'CellLabelColor','none');
+h.Title = {"Total Current Heatmap of open lattice, C_{tot}(α_1, α_2)", "β_1=1, β_2=1, k_{11}^1 = k_{12}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
 h.xlabel('α_{2}');
 h.ylabel('α_{1}');
 
 
+%% heatmap D2 another
+xvalues =  [0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ];
+yvalues =  flip([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ]);
 
+h = heatmap(xvalues, yvalues,flip(D2), 'Colormap', hot, 'ColorLimits',[0 max(D2(:))], 'GridVisible', 'off', 'CellLabelColor','none');
+h.Title = {"Current Heatmap of open lattice 2, D_2(α_1, k_{12}^1)", "β_1=1, α_{2} = 0.2, β_2=0.9, k_{11}^1 = k_{21}^1 = k_{22}^1 = 1, k_{22}^2 = 1 "};
+h.xlabel('k_{12}');
+h.ylabel('α_{1}');
